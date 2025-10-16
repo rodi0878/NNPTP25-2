@@ -15,7 +15,6 @@ public class Password {
 
     private int id;
     private String password;
-    //private HashMap<ParameterTye, Parameter> parameters;
     private HashMap<String, Parameter> parameters;
 
     public Password() {
