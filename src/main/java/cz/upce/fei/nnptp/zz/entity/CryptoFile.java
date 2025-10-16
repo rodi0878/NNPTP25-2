@@ -33,12 +33,12 @@ import javax.crypto.spec.SecretKeySpec;
 public class CryptoFile {
     
     public static String readFile(File file, String password) {
-        FileInputStream fis = null;
+        FileInputStream fileInputStream = null;
         try {
-            fis = new FileInputStream(file);
+            fileInputStream = new FileInputStream(file);
             // TODO...
             Cipher c = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            CipherInputStream cis = new CipherInputStream(fis, c);
+            CipherInputStream cis = new CipherInputStream(fileInputStream, c);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
             c.init(Cipher.DECRYPT_MODE, secretKey);
             
@@ -64,7 +64,7 @@ public class CryptoFile {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                fis.close();
+                fileInputStream.close();
             } catch (IOException ex) {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }
