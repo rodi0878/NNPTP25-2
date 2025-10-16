@@ -14,13 +14,13 @@ import java.util.List;
  */
 public class PasswordDatabase {
     private File file;
-    private String passwd;
+    private String password;
     
     private List<Password> passwords;
 
-    public PasswordDatabase(File file, String passwd) {
+    public PasswordDatabase(File file, String password) {
         this.file = file;
-        this.passwd = passwd;
+        this.password = password;
     }
     
     public void load() {
