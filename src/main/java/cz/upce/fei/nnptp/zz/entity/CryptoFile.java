@@ -82,9 +82,9 @@ public class CryptoFile {
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
             c.init(Cipher.ENCRYPT_MODE, secretKey);
             
-            DataOutputStream dos = new DataOutputStream(cis);
-            dos.writeUTF(cnt);
-            dos.close();
+            DataOutputStream dataOutputStream = new DataOutputStream(cis);
+            dataOutputStream.writeUTF(cnt);
+            dataOutputStream.close();
             c.doFinal();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
