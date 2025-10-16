@@ -42,9 +42,9 @@ public class CryptoFile {
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
             c.init(Cipher.DECRYPT_MODE, secretKey);
             
-            DataInputStream dis = new DataInputStream(cis);
-            String r = dis.readUTF();
-            dis.close();
+            DataInputStream dataInputStream = new DataInputStream(cis);
+            String r = dataInputStream.readUTF();
+            dataInputStream.close();
             c.doFinal();
             
             return r;        
