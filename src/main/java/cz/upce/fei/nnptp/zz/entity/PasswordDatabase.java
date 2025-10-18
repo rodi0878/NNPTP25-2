@@ -29,7 +29,21 @@ public class PasswordDatabase {
     }
     
     public void save() {
-        // TODO: use JSON and CryptoFile t save
+        try {
+            JSON json = new JSON();
+            String out;
+            if (passwords == null) {
+                out = "[]";
+            } else {
+                out = json.toJson(passwords);
+            }
+
+            CryptoFile.writeFile(file, password, out);
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to save password database", ex);
+        }
     }
     
     public void add(Password password) {
