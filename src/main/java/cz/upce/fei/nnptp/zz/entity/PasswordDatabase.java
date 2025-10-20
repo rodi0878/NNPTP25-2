@@ -6,8 +6,7 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -39,18 +38,19 @@ public class PasswordDatabase {
         passwords.add(password);
     }
     
-    public Password findEntryByTitle(String title) {
+    public Optional<Password> findEntryByTitle(String title) {
         for (Password password : passwords) {
             
             if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
                 Parameter.TextParameter titleParam;
                 titleParam = (Parameter.TextParameter)password.getParameter(Parameter.StandardizedParameters.TITLE);
+
                 if (titleParam.getValue().equals(title)) {
-                    return password;
+                    return Optional.of(password);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
     
 }
