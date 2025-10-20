@@ -18,9 +18,9 @@ public class PasswordDatabase {
     
     private List<Password> passwords;
 
-    public PasswordDatabase(File file, String passwd) {
+    public PasswordDatabase(File file, String password) {
         this.file = file;
-        this.password = passwd;
+        this.password = password;
         this.passwords = new ArrayList<>();
     }
     
@@ -42,10 +42,10 @@ public class PasswordDatabase {
         for (Password password : passwords) {
             
             if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
-                Parameter.TextParameter titleParam;
-                titleParam = (Parameter.TextParameter)password.getParameter(Parameter.StandardizedParameters.TITLE);
+                Parameter.TextParameter titleParameter;
+                titleParameter = (Parameter.TextParameter)password.getParameter(Parameter.StandardizedParameters.TITLE);
 
-                if (titleParam.getValue().equals(title)) {
+                if (titleParameter.getValue().equals(title)) {
                     return Optional.of(password);
                 }
             }
