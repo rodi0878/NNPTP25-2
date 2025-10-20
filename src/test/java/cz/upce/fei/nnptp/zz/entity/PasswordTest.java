@@ -42,7 +42,7 @@ public class PasswordTest {
         // TODO review the generated test code and remove the default call to fail.
         Password ppwd = new Password(0, "pass");
         
-        assertTrue(ppwd.getPassword().equals("pass"));
+        assertEquals("pass", ppwd.getPassword());
     }
     
 }

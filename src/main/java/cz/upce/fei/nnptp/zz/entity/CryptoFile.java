@@ -5,7 +5,6 @@
  */
 package cz.upce.fei.nnptp.zz.entity;
 
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -27,44 +26,42 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- *
- * @author Roman
+ * Utility class for encrypting and decrypting files using a symmetric cipher (DES).
+ * <p>
+ * Provides methods to read and write encrypted content to a file with a given password.
+ * </p>
  */
 public class CryptoFile {
-    
+
+    /**
+     * Reads and decrypts the content of a file using the provided password.
+     *
+     * @param file     the file to read from
+     * @param password the password used for decryption
+     * @return the decrypted content as a String, or null if an error occurs
+     */
     public static String readFile(File file, String password) {
-        FileInputStream fis = null;
+        FileInputStream fileInputStream = null;
         try {
-            fis = new FileInputStream(file);
+            fileInputStream = new FileInputStream(file);
             // TODO...
-            Cipher c = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            CipherInputStream cis = new CipherInputStream(fis, c);
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
-            c.init(Cipher.DECRYPT_MODE, secretKey);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
             
-            DataInputStream dis = new DataInputStream(cis);
-            String r = dis.readUTF();
-            dis.close();
-            c.doFinal();
+            DataInputStream dataInputStream = new DataInputStream(cipherInputStream);
+            String result = dataInputStream.readUTF();
+            dataInputStream.close();
+            cipher.doFinal();
             
-            return r;        
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchPaddingException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidKeyException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalBlockSizeException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BadPaddingException ex) {
+            return result;        
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException |
+                 IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                fis.close();
+                fileInputStream.close();
             } catch (IOException ex) {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -72,20 +69,26 @@ public class CryptoFile {
         
         return null;
     }
-    
-    public static void  writeFile(File file, String password, String cnt) {
-        FileOutputStream fos = null;
+    /**
+     * Encrypts and writes the given content to a file using the provided password.
+     *
+     * @param file     the file to write to
+     * @param password the password used for encryption
+     * @param content  the content to encrypt and write
+     */
+    public static void  writeFile(File file, String password, String content) {
+        FileOutputStream fileOutputStream = null;
         try {
-            fos = new FileOutputStream(file);
-            Cipher c = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            CipherOutputStream cis = new CipherOutputStream(fos, c);
+            fileOutputStream = new FileOutputStream(file);
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
-            c.init(Cipher.ENCRYPT_MODE, secretKey);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             
-            DataOutputStream dos = new DataOutputStream(cis);
-            dos.writeUTF(cnt);
-            dos.close();
-            c.doFinal();
+            DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream);
+            dataOutputStream.writeUTF(content);
+            dataOutputStream.close();
+            cipher.doFinal();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchAlgorithmException ex) {
@@ -102,7 +105,7 @@ public class CryptoFile {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                fos.close();
+                fileOutputStream.close();
             } catch (IOException ex) {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -17,20 +17,23 @@ import java.util.List;
  * 
  */
 public class main {
+    private static final String FILENAME = "test.txt";
+    private static final String ENCRYPTION_PASSWORD = "password";
+    
     public static void main(String[] args) {
         // This is only temporary demo for existing API
         // main should not be primarily updated
         // main is currently not in focus for development
         // most development should focus on application APIs
-        List<Password> pwds = new ArrayList<>();
-        pwds.add(new Password(0, "sdfghjkl"));
-        pwds.add(new Password(1, "ASDSAFafasdasdasdas"));
-        pwds.add(new Password(2, "aaa-aaaa-"));
-        String contents = new JSON().toJson(pwds);
+        List<Password> passwords = new ArrayList<>();
+        passwords.add(new Password(0, "sdfghjkl"));
+        passwords.add(new Password(1, "ASDSAFafasdasdasdas"));
+        passwords.add(new Password(2, "aaa-aaaa-"));
+        String contents = new JSON().toJson(passwords);
         
-        CryptoFile.writeFile(new File("test.txt"), "password",  contents);
+        CryptoFile.writeFile(new File(FILENAME), ENCRYPTION_PASSWORD,  contents);
         
-        String read = CryptoFile.readFile(new File("test.txt"), "password");
+        String read = CryptoFile.readFile(new File(FILENAME), ENCRYPTION_PASSWORD);
         System.out.println(read);
         
     }
