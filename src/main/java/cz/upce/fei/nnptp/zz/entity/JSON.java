@@ -38,6 +38,14 @@ public class JSON {
             .create();
 
     public String toJson(List<Password> passwords)  {
+        if (passwords == null)
+            throw new NullPointerException("Password list cannot be null");
+        for (Password p : passwords) {
+            if (p == null) {
+                throw new NullPointerException("Cannot serialize null Password object");
+            }
+        }
+
         return gson.toJson(passwords);
     }
     
