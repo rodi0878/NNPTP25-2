@@ -49,24 +49,26 @@ public class CryptoFile {
             CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
-            
+
             DataInputStream dataInputStream = new DataInputStream(cipherInputStream);
             String result = dataInputStream.readUTF();
             dataInputStream.close();
             cipher.doFinal();
-            
-            return result;        
+
+            return result;
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException |
                  IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
+              if (fileInputStream != null) {
                 fileInputStream.close();
+              }
             } catch (IOException ex) {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         return null;
     }
     /**
@@ -84,7 +86,7 @@ public class CryptoFile {
             CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            
+
             DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream);
             dataOutputStream.writeUTF(content);
             dataOutputStream.close();
@@ -111,5 +113,5 @@ public class CryptoFile {
             }
         }
     }
-    
+
 }
