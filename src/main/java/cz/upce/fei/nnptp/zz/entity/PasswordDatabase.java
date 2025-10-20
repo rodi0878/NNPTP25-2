@@ -6,6 +6,7 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ public class PasswordDatabase {
     public PasswordDatabase(File file, String passwd) {
         this.file = file;
         this.password = passwd;
+        this.passwords = new ArrayList<>();
     }
     
     public void load() {
@@ -29,7 +31,8 @@ public class PasswordDatabase {
     }
     
     public void save() {
-        // TODO: use JSON and CryptoFile t save
+        String contents = new JSON().toJson(passwords);
+        CryptoFile.writeFile(file, password, contents);
     }
     
     public void add(Password password) {
