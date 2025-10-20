@@ -5,10 +5,14 @@
  */
 package cz.upce.fei.nnptp.zz.entity;
 
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -48,18 +52,7 @@ public class JSON {
     }
     
     public List<Password> fromJson(String json) {
-        String[] v = json.replace("[","").replace("]","").split("}");
-        return Arrays.stream(v).map(f ->
-                f.replace("{id:","")
-                .replace(",{id:","")
-                .replace(",password:\"","°°°°")
-                .replace("\"",""))
-            .map(
-                    s -> {
-                        var tmp = s.split("°°°°");
-                        int id = Integer.parseInt(tmp[0].replace(",",""));
-                        return new Password(id,tmp[1]);
-                    }
-            ).toList();
+        Type passwordType = new TypeToken<List<Password>>() {}.getType();
+        return gson.fromJson(json,passwordType);
     }
 }
