@@ -26,6 +26,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
+ * Utility class for encrypting and decrypting files using a symmetric cipher (DES).
+ * <p>
+ * Provides methods to read and write encrypted content to a file with a given password.
+ * </p>
  *
  * @author Roman
  */
