@@ -32,27 +32,27 @@ import javax.crypto.spec.SecretKeySpec;
 public class CryptoFile {
     
     public static String readFile(File file, String password) {
-        FileInputStream fis = null;
+        FileInputStream fileInputStream = null;
         try {
-            fis = new FileInputStream(file);
+            fileInputStream = new FileInputStream(file);
             // TODO...
-            Cipher c = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            CipherInputStream cis = new CipherInputStream(fis, c);
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
-            c.init(Cipher.DECRYPT_MODE, secretKey);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
             
-            DataInputStream dis = new DataInputStream(cis);
-            String r = dis.readUTF();
-            dis.close();
-            c.doFinal();
+            DataInputStream dataInputStream = new DataInputStream(cipherInputStream);
+            String result = dataInputStream.readUTF();
+            dataInputStream.close();
+            cipher.doFinal();
             
-            return r;        
+            return result;        
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException |
                  IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                fis.close();
+                fileInputStream.close();
             } catch (IOException ex) {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -61,19 +61,19 @@ public class CryptoFile {
         return null;
     }
     
-    public static void  writeFile(File file, String password, String cnt) {
-        FileOutputStream fos = null;
+    public static void  writeFile(File file, String password, String content) {
+        FileOutputStream fileOutputStream = null;
         try {
-            fos = new FileOutputStream(file);
-            Cipher c = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            CipherOutputStream cis = new CipherOutputStream(fos, c);
+            fileOutputStream = new FileOutputStream(file);
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
-            c.init(Cipher.ENCRYPT_MODE, secretKey);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             
-            DataOutputStream dos = new DataOutputStream(cis);
-            dos.writeUTF(cnt);
-            dos.close();
-            c.doFinal();
+            DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream);
+            dataOutputStream.writeUTF(content);
+            dataOutputStream.close();
+            cipher.doFinal();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchAlgorithmException ex) {
@@ -90,7 +90,7 @@ public class CryptoFile {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                fos.close();
+                fileOutputStream.close();
             } catch (IOException ex) {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }

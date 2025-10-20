@@ -17,6 +17,9 @@ import java.util.List;
  * 
  */
 public class main {
+    private static final String FILENAME = "test.txt";
+    private static final String ENCRYPTION_PASSWORD = "password";
+    
     public static void main(String[] args) {
         // This is only temporary demo for existing API
         // main should not be primarily updated
@@ -28,9 +31,9 @@ public class main {
         passwords.add(new Password(2, "aaa-aaaa-"));
         String contents = new JSON().toJson(passwords);
         
-        CryptoFile.writeFile(new File("test.txt"), "password",  contents);
+        CryptoFile.writeFile(new File(FILENAME), ENCRYPTION_PASSWORD,  contents);
         
-        String read = CryptoFile.readFile(new File("test.txt"), "password");
+        String read = CryptoFile.readFile(new File(FILENAME), ENCRYPTION_PASSWORD);
         System.out.println(read);
         
     }
