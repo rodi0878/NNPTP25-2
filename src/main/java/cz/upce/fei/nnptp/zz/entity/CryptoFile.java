@@ -30,11 +30,16 @@ import javax.crypto.spec.SecretKeySpec;
  * <p>
  * Provides methods to read and write encrypted content to a file with a given password.
  * </p>
- *
- * @author Roman
  */
 public class CryptoFile {
-    
+
+    /**
+     * Reads and decrypts the content of a file using the provided password.
+     *
+     * @param file     the file to read from
+     * @param password the password used for decryption
+     * @return the decrypted content as a String, or null if an error occurs
+     */
     public static String readFile(File file, String password) {
         FileInputStream fileInputStream = null;
         try {
@@ -64,7 +69,13 @@ public class CryptoFile {
         
         return null;
     }
-    
+    /**
+     * Encrypts and writes the given content to a file using the provided password.
+     *
+     * @param file     the file to write to
+     * @param password the password used for encryption
+     * @param content  the content to encrypt and write
+     */
     public static void  writeFile(File file, String password, String content) {
         FileOutputStream fileOutputStream = null;
         try {
