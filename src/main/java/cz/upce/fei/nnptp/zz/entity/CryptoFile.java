@@ -49,13 +49,13 @@ public class CryptoFile {
             CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
-            
+
             DataInputStream dataInputStream = new DataInputStream(cipherInputStream);
             String result = dataInputStream.readUTF();
             dataInputStream.close();
             cipher.doFinal();
-            
-            return result;        
+
+            return result;
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException |
                  IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
@@ -66,9 +66,10 @@ public class CryptoFile {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         return null;
     }
+
     /**
      * Encrypts and writes the given content to a file using the provided password.
      *
@@ -76,7 +77,7 @@ public class CryptoFile {
      * @param password the password used for encryption
      * @param content  the content to encrypt and write
      */
-    public static void  writeFile(File file, String password, String content) {
+    public static void writeFile(File file, String password, String content) {
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(file);
@@ -84,32 +85,23 @@ public class CryptoFile {
             CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            
+
             DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream);
             dataOutputStream.writeUTF(content);
             dataOutputStream.close();
             cipher.doFinal();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchPaddingException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidKeyException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalBlockSizeException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BadPaddingException ex) {
+        } catch (NoSuchPaddingException | InvalidKeyException | IOException | IllegalBlockSizeException |
+                 BadPaddingException | NoSuchAlgorithmException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                fileOutputStream.close();
+                if (fileOutputStream != null) {
+                    fileOutputStream.close();
+                }
             } catch (IOException ex) {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-    
+
 }
