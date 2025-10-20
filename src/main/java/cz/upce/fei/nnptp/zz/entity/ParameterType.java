@@ -9,7 +9,7 @@ package cz.upce.fei.nnptp.zz.entity;
  *
  * @author Roman
  */
-public enum ParameterTye {
+public enum ParameterType {
     Title,
     Text,
     Password,

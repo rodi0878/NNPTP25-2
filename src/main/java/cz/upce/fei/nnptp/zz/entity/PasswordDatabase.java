@@ -14,13 +14,13 @@ import java.util.*;
  */
 public class PasswordDatabase {
     private File file;
-    private String passwd;
+    private String password;
     
     private List<Password> passwords;
 
     public PasswordDatabase(File file, String passwd) {
         this.file = file;
-        this.passwd = passwd;
+        this.password = passwd;
     }
     
     public void load() {
@@ -42,7 +42,8 @@ public class PasswordDatabase {
             if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
                 Parameter.TextParameter titleParam;
                 titleParam = (Parameter.TextParameter)password.getParameter(Parameter.StandardizedParameters.TITLE);
-                if (titleParam.getValue().equals(titleParam)) {
+
+                if (titleParam.getValue().equals(title)) {
                     return Optional.of(password);
                 }
             }
