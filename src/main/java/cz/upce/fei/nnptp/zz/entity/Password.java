@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.util.HashMap;
@@ -15,7 +10,6 @@ public class Password {
 
     private int id;
     private String password;
-    //private HashMap<ParameterType, Parameter> parameters;
     private HashMap<String, Parameter> parameters;
 
     public Password() {
