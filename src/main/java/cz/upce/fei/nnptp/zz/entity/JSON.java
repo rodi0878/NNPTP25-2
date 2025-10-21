@@ -6,10 +6,12 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,6 +52,7 @@ public class JSON {
     }
     
     public List<Password> fromJson(String json) {
-        throw new RuntimeException("NYI");
+        Type passwordType = new TypeToken<List<Password>>() {}.getType();
+        return gson.fromJson(json,passwordType);
     }
 }

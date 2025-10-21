@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,5 +67,28 @@ public class PasswordDatabaseTest {
         database.save();
 
         assertTrue(Files.exists(tempDirectory.resolve("TestValid.txt")));
+    }
+    @Test
+    public void testJsonLoadEmpty(){
+        JSON json = new JSON();
+        List<Password> v = json.fromJson("[]");
+        assertTrue(v.isEmpty());
+    }
+    @Test
+    public void testJsonLoadValue(){
+        JSON json = new JSON();
+        List<Password> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
+        assertEquals(1, v.stream().count());
+    }    @Test
+    public void testJsonLoadValuePasswordData(){
+        JSON json = new JSON();
+        List<Password> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
+        assertEquals("pswd", v.getFirst().getPassword());
+    }
+    @Test
+    public void testJsonLoadValueMultiple(){
+        JSON json = new JSON();
+        List<Password> v = json.fromJson("[{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"}]");
+        assertEquals(5, v.size());
     }
 }
