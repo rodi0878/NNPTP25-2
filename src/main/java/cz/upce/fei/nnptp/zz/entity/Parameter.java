@@ -6,6 +6,7 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.time.LocalDateTime;
+import java.util.function.Predicate;
 
 /**
  * @author Roman
@@ -19,8 +20,19 @@ public class Parameter {
         public static final String DESCRIPTION = "description";
 
     }
+    public Predicate<Parameter> validator;
+
+    public void setValidator(Predicate<Parameter> validator) {
+        this.validator = validator;
+    }
 
     public boolean isValid() {
+        if (validator != null) {
+            return validator.test(this);
+        }
+        return defaultValidation();
+    }
+    protected boolean defaultValidation() {
         return true;
     }
 
@@ -44,9 +56,11 @@ public class Parameter {
             this.value = value;
         }
 
-        public boolean isValid() {
+        @Override
+        protected boolean defaultValidation() {
             return value != null && !value.trim().isEmpty();
         }
+
     }
 
     public static class DateTimeParameter extends Parameter {
@@ -68,10 +82,9 @@ public class Parameter {
         }
 
         @Override
-        public boolean isValid() {
+        protected boolean defaultValidation() {
             return value != null && !value.isBefore(LocalDateTime.now());
         }
-
     }
 
     public static class PasswordParameter extends Parameter {
@@ -93,7 +106,7 @@ public class Parameter {
         }
 
         @Override
-        public boolean isValid() {
+        protected boolean defaultValidation() {
             if (password == null) return false;
             if (password.length() < 8) return false;
             if (!password.matches(".*[A-Z].*")) return false;
@@ -101,7 +114,5 @@ public class Parameter {
             if (!password.matches(".*\\d.*")) return false;
             return true;
         }
-
-
     }
 }
