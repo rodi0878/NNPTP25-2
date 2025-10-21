@@ -20,6 +20,10 @@ public class Parameter {
 
     }
 
+    public boolean isValid() {
+        return true;
+    }
+
     // TODO: add support for validation rules
 
     public static class TextParameter extends Parameter {
@@ -40,6 +44,9 @@ public class Parameter {
             this.value = value;
         }
 
+        public boolean isValid() {
+            return value != null && !value.trim().isEmpty();
+        }
     }
 
     public static class DateTimeParameter extends Parameter {
@@ -60,6 +67,10 @@ public class Parameter {
             this.value = value;
         }
 
+        @Override
+        public boolean isValid() {
+            return value != null && !value.isBefore(LocalDateTime.now());
+        }
 
     }
 
@@ -79,6 +90,16 @@ public class Parameter {
 
         public void setPassword(String password) {
             this.password = password;
+        }
+
+        @Override
+        public boolean isValid() {
+            if (password == null) return false;
+            if (password.length() < 8) return false;
+            if (!password.matches(".*[A-Z].*")) return false;
+            if (!password.matches(".*[a-z].*")) return false;
+            if (!password.matches(".*\\d.*")) return false;
+            return true;
         }
 
 
