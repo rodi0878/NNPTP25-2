@@ -39,11 +39,11 @@ public class Password {
     }
 
     boolean hasParameter(String TITLE) {
-        return parameters.containsKey(TITLE);
+        return parameters != null && parameters.containsKey(TITLE);
     }
-    
-    public Parameter getParameter(String t) {
-        return parameters.get(t);
+
+    public Parameter getParameter(String key) {
+        return (parameters != null) ? parameters.get(key) : null;
     }
     
     
