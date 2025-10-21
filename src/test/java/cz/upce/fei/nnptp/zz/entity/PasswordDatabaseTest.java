@@ -51,14 +51,6 @@ public class PasswordDatabaseTest {
     }
 
     @Test
-    public void testSaveNullPassword() {
-        PasswordDatabase database = new PasswordDatabase(tempDirectory.resolve("TestNull.txt").toFile(), "password");
-        database.add(null);
-        assertThrows(NullPointerException.class, database::save);
-        assertFalse(Files.exists(tempDirectory.resolve("TestNull.txt")));
-    }
-
-    @Test
     public void testSaveValidMultiplePasswords() {
         PasswordDatabase database = new PasswordDatabase(tempDirectory.resolve("TestValid.txt").toFile(), "password");
         database.add(new Password(1, "password1"));
@@ -90,5 +82,32 @@ public class PasswordDatabaseTest {
         JSON json = new JSON();
         List<Password> v = json.fromJson("[{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"}]");
         assertEquals(5, v.size());
+    }
+
+    @Test
+    void testAddNullPassword() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+        NullPointerException exception = assertThrows(NullPointerException.class, () -> database.add(null));
+        assertEquals("password is null", exception.getMessage());
+    }
+
+    @Test
+    void testAddEmptyPassword() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+        Password password = new Password(1, "");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> database.add(password));
+        assertEquals("password is empty", exception.getMessage());
+    }
+
+    @Test
+    void testAddDuplicatePassword() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+        Password password = new Password(1, "password1");
+        Password password2 = new Password(1, "password1");
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            database.add(password);
+            database.add(password2);
+        });
+        assertEquals("password already exists", exception.getMessage());
     }
 }
