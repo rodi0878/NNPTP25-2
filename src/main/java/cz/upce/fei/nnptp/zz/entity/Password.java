@@ -16,7 +16,7 @@ public class Password {
     private int id;
     private String password;
     //private HashMap<ParameterType, Parameter> parameters;
-    private HashMap<String, Parameter> parameters;
+    private HashMap<String, Parameter<?>> parameters;
 
     public Password() {
     }
@@ -26,7 +26,7 @@ public class Password {
         this.password = password;
     }
 
-    public Password(int id, String password, HashMap<String, Parameter> parameters) {
+    public Password(int id, String password, HashMap<String, Parameter<?>> parameters) {
         this.id = id;
         this.password = password;
         this.parameters = parameters;
@@ -40,7 +40,7 @@ public class Password {
         return password;
     }
 
-    public HashMap<String, Parameter> getParameters() {
+    public HashMap<String, Parameter<?>> getParameters() {
         return parameters;
     }
 
@@ -48,7 +48,7 @@ public class Password {
         return parameters.containsKey(TITLE);
     }
     
-    public Parameter getParameter(String t) {
+    public Parameter<?> getParameter(String t) {
         return parameters.get(t);
     }
     
