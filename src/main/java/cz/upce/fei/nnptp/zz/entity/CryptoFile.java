@@ -93,7 +93,9 @@ public class CryptoFile {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
+                if (fileOutputStream != null) {
                 fileOutputStream.close();
+              }
             } catch (IOException ex) {
                 Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
             }
