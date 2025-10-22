@@ -38,8 +38,8 @@ public class Password {
         return parameters;
     }
 
-    boolean hasParameter(String TITLE) {
-        return parameters != null && parameters.containsKey(TITLE);
+    boolean hasParameter(String title) {
+        return parameters != null && parameters.containsKey(title);
     }
 
     public Parameter<?> getParameter(String key) {
