@@ -42,8 +42,8 @@ public class PasswordDatabase {
         for (Password password : passwords) {
             
             if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
-                Parameter.TextParameter titleParameter;
-                titleParameter = (Parameter.TextParameter)password.getParameter(Parameter.StandardizedParameters.TITLE);
+                Parameter<?> titleParameter;
+                titleParameter = password.getParameter(Parameter.StandardizedParameters.TITLE);
 
                 if (titleParameter.getValue().equals(title)) {
                     return Optional.of(password);
