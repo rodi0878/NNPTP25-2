@@ -6,6 +6,7 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 /**
  *
@@ -90,5 +92,36 @@ public class PasswordDatabaseTest {
         JSON json = new JSON();
         List<Password> v = json.fromJson("[{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"}]");
         assertEquals(5, v.size());
+    }
+
+    // === Mockito Tests ===
+
+    @Test
+    public void testLoadWithMockedCryptoFile() {
+        try (MockedStatic<CryptoFile> mockedCryptoFile = mockStatic(CryptoFile.class)) {
+            File testFile = tempDirectory.resolve("test.txt").toFile();
+            String testPassword = "password";
+            String mockJsonData = "[{\"password\":\"testPass\",\"parameters\":{\"title\":{\"type\":\"text\",\"value\":\"Test Entry Title\"}}}]";
+            mockedCryptoFile.when(() -> CryptoFile.readFile(testFile, testPassword)).thenReturn(mockJsonData);
+
+            PasswordDatabase database = new PasswordDatabase(testFile, testPassword);
+            database.load();
+
+            mockedCryptoFile.verify(() -> CryptoFile.readFile(testFile, testPassword));
+        }
+    }
+
+    @Test
+    public void testLoadWithNullFileContent() {
+        try (MockedStatic<CryptoFile> mockedCryptoFile = mockStatic(CryptoFile.class)) {
+            File testFile = tempDirectory.resolve("test.txt").toFile();
+            String testPassword = "password";
+
+            mockedCryptoFile.when(() -> CryptoFile.readFile(testFile, testPassword)).thenReturn(null);
+
+            PasswordDatabase database = new PasswordDatabase(testFile, testPassword);
+
+            assertDoesNotThrow(database::load);
+        }
     }
 }
