@@ -88,26 +88,18 @@ public class PasswordDatabaseTest {
     void testAddNullPassword() {
         PasswordDatabase database = new PasswordDatabase(new File(""), "password");
         NullPointerException exception = assertThrows(NullPointerException.class, () -> database.add(null));
-        assertEquals("password is null", exception.getMessage());
+        assertEquals("Password is null", exception.getMessage());
     }
 
     @Test
-    void testAddEmptyPassword() {
-        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
-        Password password = new Password(1, "");
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> database.add(password));
-        assertEquals("password is empty", exception.getMessage());
-    }
-
-    @Test
-    void testAddDuplicatePassword() {
+    void testAddDuplicatePasswordId() {
         PasswordDatabase database = new PasswordDatabase(new File(""), "password");
         Password password = new Password(1, "password1");
-        Password password2 = new Password(1, "password1");
+        Password password2 = new Password(1, "password2");
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
             database.add(password);
             database.add(password2);
         });
-        assertEquals("password already exists", exception.getMessage());
+        assertEquals("Password with this ID already exists", exception.getMessage());
     }
 }

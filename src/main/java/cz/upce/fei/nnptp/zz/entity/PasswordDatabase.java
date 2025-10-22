@@ -36,14 +36,10 @@ public class PasswordDatabase {
     
     public void add(Password password) {
         if (Objects.isNull(password))
-            throw new NullPointerException("password is null");
+            throw new NullPointerException("Password is null");
 
-        if (password.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("password is empty");
-        }
-
-        if (passwords.contains(password))
-            throw new IllegalStateException("password already exists");
+        if (passwords.stream().anyMatch(p -> p.getId() == password.getId()))
+            throw new IllegalStateException("Password with this ID already exists");
 
         passwords.add(password);
     }

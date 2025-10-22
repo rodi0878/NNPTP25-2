@@ -1,7 +1,6 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  *
@@ -46,20 +45,7 @@ public class Password {
     public Parameter<?> getParameter(String key) {
         return (parameters != null) ? parameters.get(key) : null;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Password otherPassword))
-            return false;
-
-        return this.id == otherPassword.id &&
-                Objects.equals(this.password, otherPassword.password) &&
-                Objects.equals(this.parameters, otherPassword.parameters);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, password, parameters);
-    }
+    
+    
 
 }
