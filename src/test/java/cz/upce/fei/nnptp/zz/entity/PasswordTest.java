@@ -62,20 +62,20 @@ public class PasswordTest {
     @Test
     public void methods_work_when_parameters_provided() {
         // Arrange
-        HashMap<String, Parameter> map = new HashMap<>();
-        Parameter.TextParameter titleParam = new Parameter.TextParameter("MyTitle");
+        HashMap<String, Parameter<?>> map = new HashMap<>();
+        Parameter<?> titleParam = new Parameter<>("MyTitle");
         map.put(Parameter.StandardizedParameters.TITLE, titleParam);
 
         Password p = new Password(1, "secret", map);
 
         // Act
         boolean hasTitle = p.hasParameter(Parameter.StandardizedParameters.TITLE);
-        Parameter rawParam = p.getParameter(Parameter.StandardizedParameters.TITLE);
+        Parameter<?> rawParam = p.getParameter(Parameter.StandardizedParameters.TITLE);
 
         // Assert
         assertTrue(hasTitle, "TITLE should exist");
         assertNotNull(rawParam, "getParameter should not return null, when TITLE is in map");
-        Parameter.TextParameter typed = assertInstanceOf(Parameter.TextParameter.class, rawParam);
+        Parameter<?> typed = assertInstanceOf(Parameter.class, rawParam);
         assertEquals("MyTitle", typed.getValue(), "Title value should be MyTitle");
     }
     
