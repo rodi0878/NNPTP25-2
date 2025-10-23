@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Password {
 
     private int id;
-    private String password;
+    private String saveSeriesOfCharacters;
     private HashMap<String, Parameter<?>> parameters;
 
     public Password() {
@@ -13,12 +13,12 @@ public class Password {
 
     public Password(int id, String password) {
         this.id = id;
-        this.password = password;
+        this.saveSeriesOfCharacters = password;
     }
 
     public Password(int id, String password, HashMap<String, Parameter<?>> parameters) {
         this.id = id;
-        this.password = password;
+        this.saveSeriesOfCharacters = password;
         this.parameters = parameters;
     }
 
@@ -27,7 +27,7 @@ public class Password {
     }
 
     public String getPassword() {
-        return password;
+        return saveSeriesOfCharacters;
     }
 
     public HashMap<String, Parameter<?>> getParameters() {
