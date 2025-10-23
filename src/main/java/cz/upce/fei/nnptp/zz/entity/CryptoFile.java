@@ -40,9 +40,7 @@ public class CryptoFile {
      * @return the decrypted content as a String, or null if an error occurs
      */
     public static String readFile(File file, String password) {
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(file);
+        try (final var fileInputStream = new FileInputStream(file)){
             // TODO...
             Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
@@ -58,14 +56,7 @@ public class CryptoFile {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException |
                  IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                fileInputStream.close();
-            } catch (IOException ex) {
-                Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
-        
         return null;
     }
     /**
