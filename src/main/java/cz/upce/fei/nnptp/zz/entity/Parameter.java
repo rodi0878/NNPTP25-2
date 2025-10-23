@@ -7,9 +7,6 @@ package cz.upce.fei.nnptp.zz.entity;
 
 import java.time.LocalDateTime;
 
-/**
- * @author Roman
- */
 public class Parameter<T> {
 
     private T value;

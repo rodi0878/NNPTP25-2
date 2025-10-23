@@ -8,10 +8,6 @@ package cz.upce.fei.nnptp.zz.entity;
 import java.io.File;
 import java.util.*;
 
-/**
- *
- * @author Roman
- */
 public class PasswordDatabase {
     private File file;
     private String password;
