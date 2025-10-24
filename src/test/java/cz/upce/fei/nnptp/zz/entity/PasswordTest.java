@@ -39,40 +39,33 @@ public class PasswordTest {
     }
 
     @Test
-    public void testSomeMethod() {
-        // TODO review the generated test code and remove the default call to fail.
+    public void testGetPassword() {
         Password ppwd = new Password(0, "pass");
         assertEquals("pass", ppwd.getPassword());
     }
 
     @Test
-    public void methods_are_null_safe_when_parameters_is_null() {
-        // Arrange
+    public void testGetNonExistentParameter() {
         Password p = new Password(0, "pass");
 
-        // Act
         boolean hasTitle = p.hasParameter(Parameter.StandardizedParameters.TITLE);
         Parameter rawParam = p.getParameter(Parameter.StandardizedParameters.TITLE);
 
-        // Assert
         assertFalse(hasTitle, "With no parameter map, hasParameter should return false");
         assertNull(rawParam, "With no parameter map, getParameter should return null");
     }
 
     @Test
-    public void methods_work_when_parameters_provided() {
-        // Arrange
+    public void testParameterRetrival() {
         HashMap<String, Parameter<?>> map = new HashMap<>();
         Parameter<?> titleParam = new Parameter<>("MyTitle");
         map.put(Parameter.StandardizedParameters.TITLE, titleParam);
 
         Password p = new Password(1, "secret", map);
 
-        // Act
         boolean hasTitle = p.hasParameter(Parameter.StandardizedParameters.TITLE);
         Parameter<?> rawParam = p.getParameter(Parameter.StandardizedParameters.TITLE);
 
-        // Assert
         assertTrue(hasTitle, "TITLE should exist");
         assertNotNull(rawParam, "getParameter should not return null, when TITLE is in map");
         Parameter<?> typed = assertInstanceOf(Parameter.class, rawParam);
