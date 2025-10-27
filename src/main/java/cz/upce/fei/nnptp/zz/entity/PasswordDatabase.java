@@ -29,7 +29,7 @@ public class PasswordDatabase {
         }
         catch(Exception e)
         {
-            throw new RuntimeException("Unable to load password database");
+            throw new RuntimeException("Unable to load password database", e);
         }
     }
     
