@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.io.DataInputStream;
@@ -40,9 +35,7 @@ public class CryptoFile {
      * @return the decrypted content as a String, or null if an error occurs
      */
     public static String readFile(File file, String password) {
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(file);
+        try (final var fileInputStream = new FileInputStream(file)){
             // TODO...
             Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
@@ -58,14 +51,7 @@ public class CryptoFile {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException |
                  IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                fileInputStream.close();
-            } catch (IOException ex) {
-                Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
-        
         return null;
     }
     /**
@@ -76,9 +62,7 @@ public class CryptoFile {
      * @param content  the content to encrypt and write
      */
     public static void  writeFile(File file, String password, String content) {
-        FileOutputStream fileOutputStream = null;
-        try {
-            fileOutputStream = new FileOutputStream(file);
+        try (final var fileOutputStream = new FileOutputStream(file)) {
             Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
             SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
@@ -91,12 +75,6 @@ public class CryptoFile {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException |
                  IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                fileOutputStream.close();
-            } catch (IOException ex) {
-                Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
     }
     

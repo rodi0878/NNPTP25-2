@@ -1,16 +1,50 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
-/**
- * @author Roman
- */
-public class Parameter {
+public class Parameter<T> {
+
+    private T value;
+    private final List<Predicate<T>> validators = new ArrayList<>();
+
+    public Parameter() {
+        assignDefaultValidators();
+    }
+
+    public Parameter(T value) {
+        assignDefaultValidators();
+        validate(value);
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(T value) {
+        validate(value);
+        this.value = value;
+    }
+
+    public void addValidator(Predicate<T> validator) {
+        validators.add(validator);
+    }
+
+    private void validate(T value) {
+        for (Predicate<T> validator : validators) {
+            if (!validator.test(value)) {
+                throw new IllegalArgumentException(
+                        "Validation failed for value: " + value);
+            }
+        }
+    }
+
+    private void assignDefaultValidators() {
+        validators.add(v -> v != null);
+    }
 
     public static class StandardizedParameters {
         public static final String TITLE = "title";
@@ -21,66 +55,4 @@ public class Parameter {
     }
 
     // TODO: add support for validation rules
-
-    public static class TextParameter extends Parameter {
-        private String value;
-
-        public TextParameter(String value) {
-            this.value = value;
-        }
-
-        public TextParameter() {
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-    }
-
-    public static class DateTimeParameter extends Parameter {
-        private LocalDateTime value;
-
-        public DateTimeParameter() {
-        }
-
-        public DateTimeParameter(LocalDateTime value) {
-            this.value = value;
-        }
-
-        public LocalDateTime getValue() {
-            return value;
-        }
-
-        public void setValue(LocalDateTime value) {
-            this.value = value;
-        }
-
-
-    }
-
-    public static class PasswordParameter extends Parameter {
-        private String password;
-
-        public PasswordParameter() {
-        }
-
-        public PasswordParameter(String password) {
-            this.password = password;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-
-    }
 }
