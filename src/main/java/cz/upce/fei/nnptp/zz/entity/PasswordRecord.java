@@ -2,23 +2,23 @@ package cz.upce.fei.nnptp.zz.entity;
 
 import java.util.HashMap;
 
-public class Password {
+public class PasswordRecord {
 
     private int id;
-    private String saveSeriesOfCharacters;
+    private String password;
     private HashMap<String, Parameter<?>> parameters;
 
-    public Password() {
+    public PasswordRecord() {
     }
 
-    public Password(int id, String password) {
+    public PasswordRecord(int id, String password) {
         this.id = id;
-        this.saveSeriesOfCharacters = password;
+        this.password = password;
     }
 
-    public Password(int id, String password, HashMap<String, Parameter<?>> parameters) {
+    public PasswordRecord(int id, String password, HashMap<String, Parameter<?>> parameters) {
         this.id = id;
-        this.saveSeriesOfCharacters = password;
+        this.password = password;
         this.parameters = parameters;
     }
 
@@ -27,7 +27,7 @@ public class Password {
     }
 
     public String getPassword() {
-        return saveSeriesOfCharacters;
+        return password;
     }
 
     public HashMap<String, Parameter<?>> getParameters() {

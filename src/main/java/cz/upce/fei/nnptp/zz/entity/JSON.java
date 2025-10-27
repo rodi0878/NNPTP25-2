@@ -25,10 +25,10 @@ public class JSON {
             .setPrettyPrinting()
             .create();
 
-    public String toJson(List<Password> passwords)  {
+    public String toJson(List<PasswordRecord> passwords)  {
         if (passwords == null)
             throw new NullPointerException("Password list cannot be null");
-        for (Password p : passwords) {
+        for (PasswordRecord p : passwords) {
             if (p == null) {
                 throw new NullPointerException("Cannot serialize null Password object");
             }
@@ -37,8 +37,8 @@ public class JSON {
         return gson.toJson(passwords);
     }
     
-    public List<Password> fromJson(String json) {
-        Type passwordType = new TypeToken<List<Password>>() {}.getType();
+    public List<PasswordRecord> fromJson(String json) {
+        Type passwordType = new TypeToken<List<PasswordRecord>>() {}.getType();
         return gson.fromJson(json,passwordType);
     }
 }
