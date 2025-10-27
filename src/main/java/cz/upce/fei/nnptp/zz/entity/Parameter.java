@@ -21,7 +21,7 @@ public class Parameter<T> {
 
     /**
      * Default constructor.
-     * Initializes a new parameter without a value.
+     * Initializes a new parameter without a value and assigns default validators.
      */
     public Parameter() {
         assignDefaultValidators();
@@ -29,8 +29,10 @@ public class Parameter<T> {
 
     /**
      * Constructs a new parameter with the specified value.
+     * Default validators are assigned and the value is validated.
      *
      * @param value the value to store in this parameter
+     * @throws IllegalArgumentException if validation fails
      */
     public Parameter(T value) {
         assignDefaultValidators();
@@ -49,18 +51,32 @@ public class Parameter<T> {
 
     /**
      * Sets the value of this parameter.
+     * The new value is validated before being assigned.
      *
      * @param value the new value to assign
+     * @throws IllegalArgumentException if validation fails
      */
     public void setValue(T value) {
         validate(value);
         this.value = value;
     }
 
+    /**
+     * Adds a custom validator to this parameter.
+     * Validators are checked whenever a new value is assigned.
+     *
+     * @param validator a predicate representing the validation rule
+     */
     public void addValidator(Predicate<T> validator) {
         validators.add(validator);
     }
 
+    /**
+     * Validates the provided value using all assigned validators.
+     *
+     * @param value the value to validate
+     * @throws IllegalArgumentException if any validator fails
+     */
     private void validate(T value) {
         for (Predicate<T> validator : validators) {
             if (!validator.test(value)) {
@@ -70,6 +86,10 @@ public class Parameter<T> {
         }
     }
 
+    /**
+     * Assigns the default validation rules for this parameter.
+     * Currently, ensures that the value is not null.
+     */
     private void assignDefaultValidators() {
         validators.add(v -> v != null);
     }
