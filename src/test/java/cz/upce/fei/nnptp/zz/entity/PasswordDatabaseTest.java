@@ -44,8 +44,8 @@ public class PasswordDatabaseTest {
     @Test
     public void testSaveValidMultiplePasswords() {
         PasswordDatabase database = new PasswordDatabase(tempDirectory.resolve("TestValid.txt").toFile(), "password");
-        database.add(new PasswordRecord(1, "password1"));
-        database.add(new PasswordRecord(2, "password2"));
+        database.add(new PasswordEntry(1, "password1"));
+        database.add(new PasswordEntry(2, "password2"));
 
         database.save();
 
@@ -54,24 +54,24 @@ public class PasswordDatabaseTest {
     @Test
     public void testJsonLoadEmpty(){
         JSON json = new JSON();
-        List<PasswordRecord> v = json.fromJson("[]");
+        List<PasswordEntry> v = json.fromJson("[]");
         assertTrue(v.isEmpty());
     }
     @Test
     public void testJsonLoadValue(){
         JSON json = new JSON();
-        List<PasswordRecord> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
+        List<PasswordEntry> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
         assertEquals(1, v.stream().count());
     }    @Test
     public void testJsonLoadValuePasswordData(){
         JSON json = new JSON();
-        List<PasswordRecord> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
+        List<PasswordEntry> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
         assertEquals("pswd", v.getFirst().getPassword());
     }
     @Test
     public void testJsonLoadValueMultiple(){
         JSON json = new JSON();
-        List<PasswordRecord> v = json.fromJson("[{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"}]");
+        List<PasswordEntry> v = json.fromJson("[{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"}]");
         assertEquals(5, v.size());
     }
 
@@ -85,8 +85,8 @@ public class PasswordDatabaseTest {
     @Test
     void testAddDuplicatePasswordId() {
         PasswordDatabase database = new PasswordDatabase(new File(""), "password");
-        PasswordRecord password = new PasswordRecord(1, "password1");
-        PasswordRecord password2 = new PasswordRecord(1, "password2");
+        PasswordEntry password = new PasswordEntry(1, "password1");
+        PasswordEntry password2 = new PasswordEntry(1, "password2");
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
             database.add(password);
             database.add(password2);
