@@ -109,12 +109,12 @@ public class PasswordDatabaseTest {
         HashMap<String, Parameter<?>> password1Parameters = new HashMap<>();
         var password1TitleParam = new Parameter<>("PW1 title");
         password1Parameters.put(Parameter.StandardizedParameters.TITLE, password1TitleParam);
-        PasswordEntry password1 = new Password(1, "password1",password1Parameters);
+        PasswordEntry password1 = new PasswordEntry(1, "password1",password1Parameters);
 
         HashMap<String, Parameter<?>> password2Parameters = new HashMap<>();
         var password2TitleParam = new Parameter<>("PW2 title");
         password2Parameters.put(Parameter.StandardizedParameters.TITLE, password2TitleParam);
-        PasswordEntry password2 = new Password(2, "password2",password2Parameters);
+        PasswordEntry password2 = new PasswordEntry(2, "password2",password2Parameters);
 
         database.add(password1);
         database.add(password2);
