@@ -7,7 +7,7 @@ public class PasswordDatabase {
     private File file;
     private String password;
     
-    private List<Password> passwords;
+    private List<PasswordEntry> passwords;
 
     public PasswordDatabase(File file, String password) {
         this.file = file;
@@ -38,7 +38,7 @@ public class PasswordDatabase {
         CryptoFile.writeFile(file, password, contents);
     }
     
-    public void add(Password password) {
+    public void add(PasswordEntry password) {
         if (Objects.isNull(password))
             throw new NullPointerException("Password is null");
 
@@ -48,8 +48,8 @@ public class PasswordDatabase {
         passwords.add(password);
     }
     
-    public Optional<Password> findEntryByTitle(String title) {
-        for (Password password : passwords) {
+    public Optional<PasswordEntry> findEntryByTitle(String title) {
+        for (PasswordEntry password : passwords) {
             
             if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
                 Parameter<?> titleParameter;
