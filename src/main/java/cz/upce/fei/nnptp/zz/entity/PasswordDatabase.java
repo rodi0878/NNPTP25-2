@@ -23,7 +23,7 @@ public class PasswordDatabase {
                 return;
 
             JSON json = new JSON();
-            List<Password> loadedPasswords = json.fromJson(jsonData);
+            List<PasswordEntry> loadedPasswords = json.fromJson(jsonData);
             passwords.clear();
             passwords.addAll(loadedPasswords);
         }
