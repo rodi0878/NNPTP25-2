@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -101,7 +102,29 @@ public class PasswordDatabaseTest {
         assertEquals("Password with this ID already exists", exception.getMessage());
     }
 
-    // === Mockito Tests ===
+    @Test
+    void testFindEntryByTitle() {
+        PasswordDatabase database = new PasswordDatabase(new File("testDatabase.txt"), "password");
+
+        HashMap<String, Parameter<?>> password1Parameters = new HashMap<>();
+        var password1TitleParam = new Parameter<>("PW1 title");
+        password1Parameters.put(Parameter.StandardizedParameters.TITLE, password1TitleParam);
+        Password password1 = new Password(1, "password1",password1Parameters);
+
+        HashMap<String, Parameter<?>> password2Parameters = new HashMap<>();
+        var password2TitleParam = new Parameter<>("PW2 title");
+        password2Parameters.put(Parameter.StandardizedParameters.TITLE, password2TitleParam);
+        Password password2 = new Password(2, "password2",password2Parameters);
+
+        database.add(password1);
+        database.add(password2);
+
+        var foundEntry = database.findEntryByTitle("PW2 title");
+
+        assertTrue(foundEntry.isPresent());
+
+        assertEquals(foundEntry.get(), password2);
+    }
 
     @Test
     public void testLoadWithMockedCryptoFile() {
