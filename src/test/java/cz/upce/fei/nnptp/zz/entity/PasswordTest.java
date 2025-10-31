@@ -32,14 +32,14 @@ public class PasswordTest {
     @Test
     public void testSomeMethod() {
         // TODO review the generated test code and remove the default call to fail.
-        Password ppwd = new Password(0, "pass");
+        PasswordEntry ppwd = new PasswordEntry(0, "pass");
         assertEquals("pass", ppwd.getPassword());
     }
 
     @Test
     public void methods_are_null_safe_when_parameters_is_null() {
         // Arrange
-        Password p = new Password(0, "pass");
+        PasswordEntry p = new PasswordEntry(0, "pass");
 
         // Act
         boolean hasTitle = p.hasParameter(Parameter.StandardizedParameters.TITLE);
@@ -57,7 +57,7 @@ public class PasswordTest {
         Parameter<?> titleParam = new Parameter<>("MyTitle");
         map.put(Parameter.StandardizedParameters.TITLE, titleParam);
 
-        Password p = new Password(1, "secret", map);
+        PasswordEntry p = new PasswordEntry(1, "secret", map);
 
         // Act
         boolean hasTitle = p.hasParameter(Parameter.StandardizedParameters.TITLE);

@@ -1,6 +1,12 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package cz.upce.fei.nnptp.zz.entity;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +18,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 public class PasswordDatabaseTest {
     
@@ -45,8 +52,8 @@ public class PasswordDatabaseTest {
     @Test
     public void testSaveValidMultiplePasswords() {
         PasswordDatabase database = new PasswordDatabase(tempDirectory.resolve("TestValid.txt").toFile(), "password");
-        database.add(new Password(1, "password1"));
-        database.add(new Password(2, "password2"));
+        database.add(new PasswordEntry(1, "password1"));
+        database.add(new PasswordEntry(2, "password2"));
 
         database.save();
 
@@ -55,24 +62,24 @@ public class PasswordDatabaseTest {
     @Test
     public void testJsonLoadEmpty(){
         JSON json = new JSON();
-        List<Password> v = json.fromJson("[]");
+        List<PasswordEntry> v = json.fromJson("[]");
         assertTrue(v.isEmpty());
     }
     @Test
     public void testJsonLoadValue(){
         JSON json = new JSON();
-        List<Password> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
+        List<PasswordEntry> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
         assertEquals(1, v.stream().count());
     }    @Test
     public void testJsonLoadValuePasswordData(){
         JSON json = new JSON();
-        List<Password> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
+        List<PasswordEntry> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
         assertEquals("pswd", v.getFirst().getPassword());
     }
     @Test
     public void testJsonLoadValueMultiple(){
         JSON json = new JSON();
-        List<Password> v = json.fromJson("[{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"}]");
+        List<PasswordEntry> v = json.fromJson("[{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"},{username:\"user\",password:\"pswd\"}]");
         assertEquals(5, v.size());
     }
 
@@ -86,8 +93,8 @@ public class PasswordDatabaseTest {
     @Test
     void testAddDuplicatePasswordId() {
         PasswordDatabase database = new PasswordDatabase(new File(""), "password");
-        Password password = new Password(1, "password1");
-        Password password2 = new Password(1, "password2");
+        PasswordEntry password = new PasswordEntry(1, "password1");
+        PasswordEntry password2 = new PasswordEntry(1, "password2");
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
             database.add(password);
             database.add(password2);
@@ -117,5 +124,34 @@ public class PasswordDatabaseTest {
         assertTrue(foundEntry.isPresent());
 
         assertEquals(foundEntry.get(), password2);
+    }
+
+    @Test
+    public void testLoadWithMockedCryptoFile() {
+        try (MockedStatic<CryptoFile> mockedCryptoFile = mockStatic(CryptoFile.class)) {
+            File testFile = tempDirectory.resolve("test.txt").toFile();
+            String testPassword = "password";
+            String mockJsonData = "[{\"password\":\"testPass\",\"parameters\":{\"title\":{\"type\":\"text\",\"value\":\"Test Entry Title\"}}}]";
+            mockedCryptoFile.when(() -> CryptoFile.readFile(testFile, testPassword)).thenReturn(mockJsonData);
+
+            PasswordDatabase database = new PasswordDatabase(testFile, testPassword);
+            database.load();
+
+            mockedCryptoFile.verify(() -> CryptoFile.readFile(testFile, testPassword));
+        }
+    }
+
+    @Test
+    public void testLoadWithNullFileContent() {
+        try (MockedStatic<CryptoFile> mockedCryptoFile = mockStatic(CryptoFile.class)) {
+            File testFile = tempDirectory.resolve("test.txt").toFile();
+            String testPassword = "password";
+
+            mockedCryptoFile.when(() -> CryptoFile.readFile(testFile, testPassword)).thenReturn(null);
+
+            PasswordDatabase database = new PasswordDatabase(testFile, testPassword);
+
+            assertDoesNotThrow(database::load);
+        }
     }
 }
