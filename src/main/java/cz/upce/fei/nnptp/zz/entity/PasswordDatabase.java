@@ -16,8 +16,21 @@ public class PasswordDatabase {
     }
     
     public void load() {
-        // TODO: use JSON and CryptoFile to load
-        // TODO: throw exceptions when error
+        try {
+            String jsonData = CryptoFile.readFile(file, password);
+
+            if (jsonData == null || jsonData.isEmpty())
+                return;
+
+            JSON json = new JSON();
+            List<Password> loadedPasswords = json.fromJson(jsonData);
+            passwords.clear();
+            passwords.addAll(loadedPasswords);
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException("Unable to load password database", e);
+        }
     }
     
     public void save() {
