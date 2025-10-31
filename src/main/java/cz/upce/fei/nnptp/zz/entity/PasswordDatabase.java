@@ -34,6 +34,7 @@ public class PasswordDatabase {
     }
     
     public void save() {
+        List<PasswordEntry> listToSave = passwords != null ? passwords : List.of();
         String contents = new JSON().toJson(passwords);
         CryptoFile.writeFile(file, password, contents);
     }
