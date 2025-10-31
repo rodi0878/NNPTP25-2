@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cz.upce.fei.nnptp.zz.entity;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,23 +54,28 @@ public class PasswordDatabaseTest {
 
         assertTrue(Files.exists(tempDirectory.resolve("TestValid.txt")));
     }
+    
     @Test
     public void testJsonLoadEmpty(){
         JSON json = new JSON();
         List<PasswordEntry> v = json.fromJson("[]");
         assertTrue(v.isEmpty());
     }
+    
     @Test
     public void testJsonLoadValue(){
         JSON json = new JSON();
         List<PasswordEntry> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
         assertEquals(1, v.stream().count());
-    }    @Test
+    }    
+    
+    @Test
     public void testJsonLoadValuePasswordData(){
         JSON json = new JSON();
         List<PasswordEntry> v = json.fromJson("[{username:\"user\",password:\"pswd\"}]");
         assertEquals("pswd", v.getFirst().getPassword());
     }
+    
     @Test
     public void testJsonLoadValueMultiple(){
         JSON json = new JSON();
@@ -109,12 +109,12 @@ public class PasswordDatabaseTest {
         HashMap<String, Parameter<?>> password1Parameters = new HashMap<>();
         var password1TitleParam = new Parameter<>("PW1 title");
         password1Parameters.put(Parameter.StandardizedParameters.TITLE, password1TitleParam);
-        Password password1 = new Password(1, "password1",password1Parameters);
+        PasswordEntry password1 = new Password(1, "password1",password1Parameters);
 
         HashMap<String, Parameter<?>> password2Parameters = new HashMap<>();
         var password2TitleParam = new Parameter<>("PW2 title");
         password2Parameters.put(Parameter.StandardizedParameters.TITLE, password2TitleParam);
-        Password password2 = new Password(2, "password2",password2Parameters);
+        PasswordEntry password2 = new Password(2, "password2",password2Parameters);
 
         database.add(password1);
         database.add(password2);
