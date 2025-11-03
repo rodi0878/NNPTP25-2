@@ -9,12 +9,20 @@ public class PasswordDatabase {
     
     private List<PasswordEntry> passwords;
 
+    /**
+     * Creates PasswordDatabase object
+     * @param file - file to store and load database from
+     * @param password - string used to encrypt and decrypt database at rest
+     */
     public PasswordDatabase(File file, String password) {
         this.file = file;
         this.password = password;
         this.passwords = new ArrayList<>();
     }
-    
+
+    /**
+     * Loads contents of a database from an encripted file. File and decription password is set druing Database creation.
+     */
     public void load() {
         try {
             String jsonData = CryptoFile.readFile(file, password);
@@ -32,12 +40,19 @@ public class PasswordDatabase {
             throw new RuntimeException("Unable to load password database", e);
         }
     }
-    
+
+    /**
+     * Saves contents of a database to an encripted file. File and encription password is set druing Database creation.
+     */
     public void save() {
         String contents = new JSON().toJson(passwords);
         CryptoFile.writeFile(file, password, contents);
     }
-    
+
+    /**
+     * Adds a password to database
+     * @param password - Password to add
+     */
     public void add(PasswordEntry password) {
         if (Objects.isNull(password))
             throw new NullPointerException("Password is null");
@@ -47,7 +62,12 @@ public class PasswordDatabase {
 
         passwords.add(password);
     }
-    
+
+    /**
+     * Searches the database for a password based on title parameter
+     * @param title - title to search for. Only complete match is returned
+     * @return optional containing first password which title parameter matches input or empty optional if password not found
+     */
     public Optional<PasswordEntry> findEntryByTitle(String title) {
         for (PasswordEntry password : passwords) {
             
