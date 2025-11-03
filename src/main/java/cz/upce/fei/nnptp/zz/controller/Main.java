@@ -25,7 +25,7 @@ public class Main {
         // Main should not be primarily updated
         // Main is currently not in focus for development
         // most development should focus on application APIs
-        List<Password> passwords = new ArrayList<>();
+        List<PasswordEntry> passwords = new ArrayList<>();
         passwords.add(new PasswordEntry(0, "sdfghjkl"));
         passwords.add(new PasswordEntry(1, "ASDSAFafasdasdasdas"));
         passwords.add(new PasswordEntry(2, "aaa-aaaa-"));
