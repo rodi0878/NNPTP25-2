@@ -2,7 +2,7 @@ package cz.upce.fei.nnptp.zz.controller;
 
 import cz.upce.fei.nnptp.zz.entity.CryptoFile;
 import cz.upce.fei.nnptp.zz.entity.JSON;
-import cz.upce.fei.nnptp.zz.entity.Password;
+import cz.upce.fei.nnptp.zz.entity.PasswordEntry;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +26,9 @@ public class Main {
         // Main is currently not in focus for development
         // most development should focus on application APIs
         List<Password> passwords = new ArrayList<>();
-        passwords.add(new Password(0, "sdfghjkl"));
-        passwords.add(new Password(1, "ASDSAFafasdasdasdas"));
-        passwords.add(new Password(2, "aaa-aaaa-"));
+        passwords.add(new PasswordEntry(0, "sdfghjkl"));
+        passwords.add(new PasswordEntry(1, "ASDSAFafasdasdasdas"));
+        passwords.add(new PasswordEntry(2, "aaa-aaaa-"));
         String contents = new JSON().toJson(passwords);
         
         CryptoFile.writeFile(new File(FILENAME), ENCRYPTION_PASSWORD,  contents);
