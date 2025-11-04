@@ -2,4 +2,4 @@ build/
 target/
 data/
 nbproject/
-nb-configuration.xml
+nb-configuration.xml.DS_Store
