@@ -1,5 +1,18 @@
 build/
-target/
 data/
 nbproject/
 nb-configuration.xml.DS_Store
+
+# OS-specific
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+
+# Build output
+target/
+
+# Temp and test files
+test.txt
+testDatabase.txt

@@ -37,7 +37,6 @@ public class FilePasswordRepository implements PasswordRepository {
         this.json = Objects.requireNonNull(json, "json must not be null");
     }
 
-    @Override
     /**
      * Loads all password entries from the encrypted file.
      * If the file is empty or cannot be read, an empty list is returned.
@@ -45,16 +44,17 @@ public class FilePasswordRepository implements PasswordRepository {
      * @return a mutable list of all persisted password entries
      * @throws PasswordStorageException if the stored data cannot be deserialized
      */
+    @Override
     public List<PasswordEntry> findAll() {
         String data = CryptoFile.readFile(file, password);
 
-        // CryptoFile vrací null při chybě, tady to raději interpretujeme jako "žádná data"
+        // CryptoFile returns null on error; interpret this as "no data" and return an empty list.
         if (data == null || data.isBlank()) {
             return new ArrayList<>();
         }
 
         try {
-            // JSON.fromJson vrací raw List, tak to musíme přetypovat
+            // JSON.fromJson returns raw List, so we must cast it.
             @SuppressWarnings("unchecked")
             List<PasswordEntry> entries = (List<PasswordEntry>) json.fromJson(data);
             if (entries == null) {
@@ -66,13 +66,13 @@ public class FilePasswordRepository implements PasswordRepository {
         }
     }
 
-    @Override
     /**
      * Finds the first password entry whose TITLE parameter matches the given name.
      *
      * @param name the title value to search for (may be {@code null})
      * @return an {@link Optional} with the matching entry, or {@code Optional.empty()} if not found or name is {@code null}
      */
+    @Override
     public Optional<PasswordEntry> findByName(String name) {
         if (name == null) {
             return Optional.empty();
@@ -88,22 +88,22 @@ public class FilePasswordRepository implements PasswordRepository {
         return Optional.empty();
     }
 
-    @Override
     /**
      * Persists all provided password entries into the encrypted file, replacing any previous content.
      *
      * @param entries the entries to be stored; may be {@code null}, in which case an empty list is stored
      * @throws PasswordStorageException if the data cannot be serialized or written to the file
      */
+    @Override
     public void saveAll(List<PasswordEntry> entries) {
         List<PasswordEntry> safeList =
                 entries == null ? Collections.emptyList() : new ArrayList<>(entries);
 
         try {
-            // JSON používá toJson(...)
+            // JSON uses toJson(...) to serialize the list.
             String data = json.toJson(safeList);
 
-            // CryptoFile.writeFile už sám řeší šifrování + IO a chyby loguje.
+            // CryptoFile.writeFile is responsible for encryption and I/O; it also logs any errors internally.
             CryptoFile.writeFile(file, password, data);
         } catch (RuntimeException e) {
             throw new PasswordStorageException("Failed to save password entries", e);

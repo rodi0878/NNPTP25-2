@@ -19,21 +19,37 @@ class FilePasswordRepositoryTest {
     Path tempDir;
 
     @Test
-    void saveAllAndFindAll_shouldPersistAndLoadEntries() {
+    void saveAll_shouldPersistEntriesToFile() {
         File file = tempDir.resolve("repo.txt").toFile();
         String masterPassword = "password";
 
         JSON json = new JSON();
         FilePasswordRepository repository = new FilePasswordRepository(file, masterPassword, json);
 
-        // připravíme jeden záznam
         HashMap<String, Parameter<?>> params = new HashMap<>();
         params.put(Parameter.StandardizedParameters.TITLE, new Parameter<>("My title"));
         PasswordEntry entry = new PasswordEntry(1, "secret", params);
 
         repository.saveAll(List.of(entry));
 
-        // nový repository nad stejným souborem – musí načíst to samé
+        assertTrue(file.exists());
+        assertTrue(file.length() > 0);
+    }
+
+    @Test
+    void findAll_shouldLoadEntriesFromFile() {
+        File file = tempDir.resolve("repo_load.txt").toFile();
+        String masterPassword = "password";
+
+        JSON json = new JSON();
+        FilePasswordRepository repository = new FilePasswordRepository(file, masterPassword, json);
+
+        HashMap<String, Parameter<?>> params = new HashMap<>();
+        params.put(Parameter.StandardizedParameters.TITLE, new Parameter<>("My title"));
+        PasswordEntry entry = new PasswordEntry(1, "secret", params);
+
+        repository.saveAll(List.of(entry));
+
         FilePasswordRepository repository2 = new FilePasswordRepository(file, masterPassword, json);
         List<PasswordEntry> loaded = repository2.findAll();
 
@@ -43,8 +59,8 @@ class FilePasswordRepositoryTest {
     }
 
     @Test
-    void findByName_shouldReturnEntryByTitleParameter() {
-        File file = tempDir.resolve("repo2.txt").toFile();
+    void findByName_shouldReturnMatchingEntry() {
+        File file = tempDir.resolve("repo_find.txt").toFile();
         String masterPassword = "password";
 
         JSON json = new JSON();
@@ -60,8 +76,26 @@ class FilePasswordRepositoryTest {
 
         repository.saveAll(List.of(first, second));
 
-        assertTrue(repository.findByName("Second").isPresent());
-        assertEquals(2, repository.findByName("Second").get().getId());
+        var result = repository.findByName("Second");
+
+        assertTrue(result.isPresent());
+        assertEquals(2, result.get().getId());
+    }
+
+    @Test
+    void findByName_shouldReturnEmptyForUnknownTitle() {
+        File file = tempDir.resolve("repo_find_unknown.txt").toFile();
+        String masterPassword = "password";
+
+        JSON json = new JSON();
+        FilePasswordRepository repository = new FilePasswordRepository(file, masterPassword, json);
+
+        HashMap<String, Parameter<?>> params = new HashMap<>();
+        params.put(Parameter.StandardizedParameters.TITLE, new Parameter<>("Existing"));
+        PasswordEntry entry = new PasswordEntry(1, "pw1", params);
+
+        repository.saveAll(List.of(entry));
+
         assertTrue(repository.findByName("Unknown").isEmpty());
     }
 }
