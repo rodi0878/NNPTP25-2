@@ -27,6 +27,9 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class CryptoFile {
 
+    private static final String ENCRYPTION_ALGORITHM = "DES";
+    private static final String CIPHER_TRANSFORMATION = "DES/ECB/PKCS5Padding";
+
     /**
      * Reads and decrypts the content of a file using the provided password.
      *
@@ -37,9 +40,9 @@ public class CryptoFile {
     public static String readFile(File file, String password) {
         try (final var fileInputStream = new FileInputStream(file)){
             // TODO...
-            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
             CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
-            SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
+            SecretKey secretKey = new SecretKeySpec(password.getBytes(), ENCRYPTION_ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             
             DataInputStream dataInputStream = new DataInputStream(cipherInputStream);
@@ -63,9 +66,9 @@ public class CryptoFile {
      */
     public static void  writeFile(File file, String password, String content) {
         try (final var fileOutputStream = new FileOutputStream(file)) {
-            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
             CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
-            SecretKey secretKey = new SecretKeySpec(password.getBytes(), "DES");
+            SecretKey secretKey = new SecretKeySpec(password.getBytes(), ENCRYPTION_ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             
             DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream);
