@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 public class Parameter<T> {
 
     private T value;
-    private final List<Predicate<T>> validators = new ArrayList<>();
+    private final transient List<Predicate<T>> validators = new ArrayList<>();
 
     /**
      * Default constructor.
