@@ -1,6 +1,5 @@
 package cz.upce.fei.nnptp.zz.entity;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
