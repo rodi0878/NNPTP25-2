@@ -20,12 +20,24 @@ public class PasswordDatabase {
     // In-memory cache of password entries
     private final List<PasswordEntry> passwords;
 
-    // Repository handling persistence logic
+    // Repository handling persistence logic (now injectable)
     private final PasswordRepository repository;
 
     /**
+     * Primary constructor that enables injecting any repository implementation.
+     * Great for unit testing and future storage backends.
+     */
+    public PasswordDatabase(PasswordRepository repository) {
+        this.repository = Objects.requireNonNull(repository, "repository must not be null");
+        this.file = null;
+        this.password = null;
+        this.passwords = new ArrayList<>();
+    }
+
+    /**
      * Creates PasswordDatabase object
-     * @param file - file to store and load database from
+     *
+     * @param file     - file to store and load database from
      * @param password - string used to encrypt and decrypt database at rest
      */
     public PasswordDatabase(File file, String password) {
@@ -62,14 +74,13 @@ public class PasswordDatabase {
 
     /**
      * Adds a password to the in-memory database.
+     *
      * @param password - Password to add
      */
     public void add(PasswordEntry password) {
-        if (Objects.isNull(password))
-            throw new NullPointerException("Password is null");
-
-        if (passwords.stream().anyMatch(p -> p.getId() == password.getId()))
-            throw new IllegalStateException("Password with this ID already exists");
+        Objects.requireNonNull(password, "Password is null");
+        boolean idExists = passwords.stream().anyMatch(p -> p.getId() == password.getId());
+        if (idExists) throw new IllegalStateException("Password with this ID already exists");
 
         passwords.add(password);
         // Testy nevyžadují automatický persist — proto save() není volán zde.
@@ -77,20 +88,19 @@ public class PasswordDatabase {
 
     /**
      * Searches the in-memory database for a password based on the title parameter.
+     *
      * @param title - title to search for. Only complete match is returned.
      * @return optional containing first password whose title parameter matches input or empty optional if password not found
      */
     public Optional<PasswordEntry> findEntryByTitle(String title) {
-        for (PasswordEntry password : passwords) {
-            if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
-                Parameter<?> titleParameter = password.getParameter(Parameter.StandardizedParameters.TITLE);
-                if (titleParameter != null &&
-                        titleParameter.getValue() != null &&
-                        titleParameter.getValue().equals(title)) {
-                    return Optional.of(password);
-                }
-            }
-        }
-        return Optional.empty();
+        if (title == null) return Optional.empty();
+
+        return passwords.stream()
+                .filter(p -> p.hasParameter(Parameter.StandardizedParameters.TITLE))
+                .map(p -> new Object[]{p, p.getParameter(Parameter.StandardizedParameters.TITLE)})
+                .filter(arr -> arr[1] != null && ((Parameter<?>) arr[1]).getValue() != null)
+                .filter(arr -> Objects.equals(((Parameter<?>) arr[1]).getValue(), title))
+                .map(arr -> (PasswordEntry) arr[0])
+                .findFirst();
     }
 }
