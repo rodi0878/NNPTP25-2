@@ -154,4 +154,34 @@ public class PasswordDatabaseTest {
             assertDoesNotThrow(database::load);
         }
     }
+
+    @Test
+    void testFindEntryByTitleWithNull() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                database.findEntryByTitle(null)
+        );
+        assertEquals("Title must not be null or empty.", exception.getMessage());
+    }
+
+    @Test
+    void testFindEntryByTitleWithEmptyString() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                database.findEntryByTitle("")
+        );
+        assertEquals("Title must not be null or empty.", exception.getMessage());
+    }
+
+    @Test
+    void testFindEntryByTitleWithWhitespace() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                database.findEntryByTitle("  \t  ")
+        );
+        assertEquals("Title must not be null or empty.", exception.getMessage());
+    }
 }
