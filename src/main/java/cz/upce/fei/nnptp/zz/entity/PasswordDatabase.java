@@ -96,4 +96,8 @@ public class PasswordDatabase {
         }
         return Optional.empty();
     }
+
+    public List<PasswordEntry> getAll() {
+        return new ArrayList<>(passwords);
+    }
 }
