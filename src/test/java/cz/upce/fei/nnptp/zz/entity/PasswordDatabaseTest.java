@@ -190,15 +190,15 @@ public class PasswordDatabaseTest {
     }
 
     @Test
-    void testGetAllReturnCorrectSize() {
-        List<PasswordEntry> allEntries = database.getAll();
+    void testGetAllEntriesReturnCorrectSize() {
+        List<PasswordEntry> allEntries = database.getAllEntries();
         assertEquals(2, allEntries.size());
     }
 
     @Test
-    void testGetAllReturnCopyNotReference() {
-        List<PasswordEntry> allEntries = database.getAll();
+    void testGetAllEntriesReturnCopyNotReference() {
+        List<PasswordEntry> allEntries = database.getAllEntries();
         allEntries.clear();
-        assertEquals(2, database.getAll().size());
+        assertEquals(2, database.getAllEntries().size());
     }
 }
