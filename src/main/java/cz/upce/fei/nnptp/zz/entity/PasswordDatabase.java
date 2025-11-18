@@ -96,4 +96,13 @@ public class PasswordDatabase {
         }
         return Optional.empty();
     }
+
+
+    /**
+     * Returns all password entries currently in memory.
+     * @return list of password entries
+     */
+    public List<PasswordEntry> getAllEntries() {
+        return new ArrayList<>(passwords);
+    }
 }
