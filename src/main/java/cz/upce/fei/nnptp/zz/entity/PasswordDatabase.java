@@ -24,6 +24,17 @@ public class PasswordDatabase {
     private final PasswordRepository repository;
 
     /**
+     * Primary constructor that enables injecting any repository implementation.
+     * Great for unit testing and future storage backends.
+     */
+    public PasswordDatabase(PasswordRepository repository) {
+        this.repository = Objects.requireNonNull(repository, "repository must not be null");
+        this.file = null;
+        this.password = null;
+        this.passwords = new ArrayList<>();
+    }
+
+    /**
      * Creates PasswordDatabase object
      * @param file - file to store and load database from
      * @param password - string used to encrypt and decrypt database at rest
