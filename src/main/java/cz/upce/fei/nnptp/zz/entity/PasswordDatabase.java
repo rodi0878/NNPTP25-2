@@ -81,6 +81,9 @@ public class PasswordDatabase {
      * @return optional containing first password whose title parameter matches input or empty optional if password not found
      */
     public Optional<PasswordEntry> findEntryByTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title must not be null or empty.");
+        }
         for (PasswordEntry password : passwords) {
             if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
                 Parameter<?> titleParameter = password.getParameter(Parameter.StandardizedParameters.TITLE);
