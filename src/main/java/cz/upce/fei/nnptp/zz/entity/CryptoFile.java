@@ -32,6 +32,22 @@ public class CryptoFile {
     private static final String ENCRYPTION_ALGORITHM = "DES";
     private static final String CIPHER_TRANSFORMATION = "DES/ECB/PKCS5Padding";
 
+    private CryptoFile() {
+        throw new AssertionError("Utility class should not be instantiated");
+    }
+
+    private static Cipher initCipher(int mode, String password) throws
+            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+
+        Objects.requireNonNull(password, "Password must not be null");
+
+        Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+        SecretKey secretKey = new SecretKeySpec(password.getBytes(StandardCharsets.UTF_8),
+                ENCRYPTION_ALGORITHM);
+        cipher.init(mode, secretKey);
+        return cipher;
+    }
+
     /**
      * Reads and decrypts the content of a file using the provided password.
      *
@@ -45,11 +61,7 @@ public class CryptoFile {
 
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             // Build and INIT the cipher BEFORE wrapping it in CipherInputStream.
-            Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-            SecretKey secretKey = new SecretKeySpec(password.getBytes(StandardCharsets.UTF_8),
-                    ENCRYPTION_ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
-
+            Cipher cipher = initCipher(Cipher.DECRYPT_MODE, password);
             try (CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
                  DataInputStream dataInputStream = new DataInputStream(cipherInputStream)) {
                 // Matches write side: DataOutputStream#writeUTF
@@ -75,10 +87,7 @@ public class CryptoFile {
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             // Build and INIT the cipher BEFORE wrapping it in CipherOutputStream.
-            Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-            SecretKey secretKey = new SecretKeySpec(password.getBytes(StandardCharsets.UTF_8),
-                    ENCRYPTION_ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            Cipher cipher = initCipher(Cipher.ENCRYPT_MODE, password);
 
             try (CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
                  DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream)) {
