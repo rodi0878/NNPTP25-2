@@ -23,11 +23,15 @@ public class PasswordDatabaseTest {
     }
     
     private Path tempDirectory;
+    private PasswordDatabase database;
 
     @BeforeEach
     public void setUp() throws IOException {
         tempDirectory = Files.createTempDirectory("PasswordDatabaseTest");
         assertTrue(Files.exists(tempDirectory));
+        database = new PasswordDatabase(new File("test.db"), "testPassword");
+        database.add(new PasswordEntry(1, "password1"));
+        database.add(new PasswordEntry(2, "password2"));
     }
     
     @AfterEach
@@ -215,5 +219,17 @@ public class PasswordDatabaseTest {
         assertEquals(2, captured.size());
         assertTrue(captured.contains(existing));
         assertTrue(captured.contains(newEntry));
+
+    @Test
+    void testGetAllEntriesReturnCorrectSize() {
+        List<PasswordEntry> allEntries = database.getAllEntries();
+        assertEquals(2, allEntries.size());
+    }
+
+    @Test
+    void testGetAllEntriesReturnCopyNotReference() {
+        List<PasswordEntry> allEntries = database.getAllEntries();
+        allEntries.clear();
+        assertEquals(2, database.getAllEntries().size());
     }
 }
