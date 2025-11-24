@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 public class JSON {
 
@@ -26,13 +27,12 @@ public class JSON {
             .create();
 
     public String toJson(List<PasswordEntry> passwords)  {
-        if (passwords == null)
-            throw new NullPointerException("Password list cannot be null");
-        for (PasswordEntry p : passwords) {
-            if (p == null) {
-                throw new NullPointerException("Cannot serialize null Password object");
-            }
-        }
+        Objects.requireNonNull(passwords, "Password list cannot be null");
+
+        // validate entries
+        passwords.forEach(p ->
+                Objects.requireNonNull(p, "Cannot serialize null Password object")
+        );
 
         return gson.toJson(passwords);
     }
