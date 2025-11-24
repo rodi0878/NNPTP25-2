@@ -10,9 +10,11 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
+import cz.upce.fei.nnptp.zz.repository.PasswordRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 public class PasswordDatabaseTest {
@@ -187,6 +189,36 @@ public class PasswordDatabaseTest {
                 database.findEntryByTitle("  \t  ")
         );
         assertEquals("Title must not be null or empty.", exception.getMessage());
+    }
+
+    @Test
+    public void testConstructorWithInjectedRepository() {
+        // Mock repository and its behavior
+        PasswordRepository repo = mock(PasswordRepository.class);
+        PasswordEntry existing = new PasswordEntry(1, "existing");
+        when(repo.findAll()).thenReturn(List.of(existing));
+
+        // Create database with injected repository
+        PasswordDatabase database = new PasswordDatabase(repo);
+
+        // load() should call repository.findAll()
+        database.load();
+        verify(repo).findAll();
+
+        // Add a new entry and call save() which should call repository.saveAll(...)
+        PasswordEntry newEntry = new PasswordEntry(2, "newpass");
+        database.add(newEntry);
+        database.save();
+
+        // Capture the list passed to saveAll and assert it contains both entries
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(repo).saveAll(captor.capture());
+        List captured = captor.getValue();
+
+        assertEquals(2, captured.size());
+        assertTrue(captured.contains(existing));
+        assertTrue(captured.contains(newEntry));
     }
 
     @Test
