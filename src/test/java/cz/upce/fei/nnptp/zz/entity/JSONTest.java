@@ -1,12 +1,54 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONTest {
     private final JSON jsonUtil = new JSON();
+
+    @Test
+    void toJson_ThrowsException_WhenInputIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> jsonUtil.toJson(null),
+                "Expected to throw when input list is null");
+    }
+
+    @Test
+    void toJson_ThrowsException_WhenListContainsNullEntry() {
+        List<PasswordEntry> list = new ArrayList<>();
+        list.add(new PasswordEntry(1, "abc"));
+        list.add(null); // allowed
+
+        assertThrows(NullPointerException.class,
+                () -> jsonUtil.toJson(list),
+                "Expected to throw when list contains null entry");
+    }
+
+    @Test
+    void toJson_ReturnsValidJson_WhenListIsEmpty() {
+        List<PasswordEntry> empty = List.of();
+
+        String result = jsonUtil.toJson(empty);
+
+        assertNotNull(result, "Result should not be null");
+        assertEquals("[]", result.trim(), "Empty list should serialize to []");
+    }
+
+    @Test
+    void toJson_SerializesSimpleEntryCorrectly() {
+        PasswordEntry entry = new PasswordEntry(1, "secret123");
+        List<PasswordEntry> list = List.of(entry);
+
+        String json = jsonUtil.toJson(list);
+
+        assertNotNull(json);
+        assertTrue(json.contains("\"id\": 1"), "Should contain id");
+        assertTrue(json.contains("\"password\": \"secret123\""), "Should contain password");
+    }
 
     @Test
     void fromJson_ReturnsEmptyList_WhenInputIsNull() {
