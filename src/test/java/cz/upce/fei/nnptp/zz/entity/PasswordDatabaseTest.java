@@ -219,6 +219,7 @@ public class PasswordDatabaseTest {
         assertEquals(2, captured.size());
         assertTrue(captured.contains(existing));
         assertTrue(captured.contains(newEntry));
+    }
 
     @Test
     void testGetAllEntriesReturnCorrectSize() {
