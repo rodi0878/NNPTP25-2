@@ -192,6 +192,20 @@ public class PasswordDatabaseTest {
     }
 
     @Test
+    void testRemoveByIdRemovesExistingEntry() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+
+        PasswordEntry entry = new PasswordEntry(1, "password1");
+        database.add(entry);
+
+        boolean removed = database.removeById(1);
+
+        assertTrue(removed);
+
+        assertDoesNotThrow(() -> database.add(new PasswordEntry(1, "password2")));
+    }
+
+    @Test
     public void testConstructorWithInjectedRepository() {
         // Mock repository and its behavior
         PasswordRepository repo = mock(PasswordRepository.class);
@@ -234,3 +248,4 @@ public class PasswordDatabaseTest {
         assertEquals(2, database.getAllEntries().size());
     }
 }
+

@@ -87,6 +87,16 @@ public class PasswordDatabase {
     }
 
     /**
+     * Removes a password entry with the given ID from the in-memory database.
+     *
+     * @param id ID of the password entry to remove
+     * @return {@code true}, if at least one entry was removed, {@code false} otherwise
+     */
+    public boolean removeById(int id) {
+        return passwords.removeIf(entry -> entry.getId() == id);
+    }
+
+    /**
      * Searches the in-memory database for a password based on the title parameter.
      * @param title - title to search for. Only complete match is returned.
      * @return optional containing first password whose title parameter matches input or empty optional if password not found
