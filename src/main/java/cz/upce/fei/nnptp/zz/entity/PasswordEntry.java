@@ -82,7 +82,7 @@ public class PasswordEntry {
      * Returns the map of parameters associated with this entry.
      *
      * @return a map of parameter names to {@link Parameter} objects,
-     *         or {@code null} if no parameters are set
+     *      or {@code null} if no parameters are set
      */
     public HashMap<String, Parameter<?>> getParameters() {
         return parameters;
