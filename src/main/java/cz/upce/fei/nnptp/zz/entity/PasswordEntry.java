@@ -7,7 +7,7 @@ public class PasswordEntry {
 
     private int id;
     private String password;
-    private HashMap<String, Parameter<?>> parameters;
+    private HashMap<String, Parameter<?>> parameters = new HashMap<>();
 
     public PasswordEntry() {
     }
@@ -20,7 +20,7 @@ public class PasswordEntry {
     public PasswordEntry(int id, String password, HashMap<String, Parameter<?>> parameters) {
         this.id = id;
         this.password = password;
-        this.parameters = parameters;
+        this.parameters = (parameters != null) ? parameters : new HashMap<>();
     }
 
     public int getId() {
