@@ -1,6 +1,8 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +64,7 @@ public class PasswordEntryTest {
         HashMap<String, Parameter<?>> params = new HashMap<>();
         params.put("title", new Parameter<>("TestTitle"));
         PasswordEntry instance = new PasswordEntry(1, "pwd", params);
-        HashMap<String, Parameter<?>> result = instance.getParameters();
+        Map<String, Parameter<?>> result = instance.getParameters();
         assertEquals(params, result);
     }
 

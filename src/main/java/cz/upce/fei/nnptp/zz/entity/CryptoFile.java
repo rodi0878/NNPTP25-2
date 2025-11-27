@@ -12,11 +12,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -33,18 +31,22 @@ public class CryptoFile {
     private static final String CIPHER_TRANSFORMATION = "DES/ECB/PKCS5Padding";
 
     private CryptoFile() {
+
         throw new AssertionError("Utility class should not be instantiated");
     }
 
-    private static Cipher initCipher(int mode, String password) throws
-            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    private static Cipher initCipher(int mode, String password)
+            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
 
         Objects.requireNonNull(password, "Password must not be null");
 
-        Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-        SecretKey secretKey = new SecretKeySpec(password.getBytes(StandardCharsets.UTF_8),
+        SecretKey secretKey = new SecretKeySpec(
+                password.getBytes(StandardCharsets.UTF_8),
                 ENCRYPTION_ALGORITHM);
+
+        Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
         cipher.init(mode, secretKey);
+
         return cipher;
     }
 
@@ -56,21 +58,18 @@ public class CryptoFile {
      * @return the decrypted content as a String, or null if an error occurs
      */
     public static String readFile(File file, String password) {
-        Objects.requireNonNull(file, "file must not be null");
-        Objects.requireNonNull(password, "password must not be null");
+        Objects.requireNonNull(file, "File must not be null");
+        Objects.requireNonNull(password, "Password must not be null");
 
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            // Build and INIT the cipher BEFORE wrapping it in CipherInputStream.
-            Cipher cipher = initCipher(Cipher.DECRYPT_MODE, password);
+        try (FileInputStream fileInputStream = new FileInputStream(file);
+             CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, initCipher(Cipher.DECRYPT_MODE, password));
+             DataInputStream dataInputStream = new DataInputStream(cipherInputStream)) {
 
-            try (CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
-                 DataInputStream dataInputStream = new DataInputStream(cipherInputStream)) {
-                // Matches write side: DataOutputStream#writeUTF
-                return dataInputStream.readUTF();
-            }
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-                 | IOException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, "Decrypt failed", ex);
+            return dataInputStream.readUTF();
+
+        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException ex) {
+            Logger.getLogger(CryptoFile.class.getName())
+                    .log(Level.SEVERE, "Error while decrypting file", ex);
             return null;
         }
     }
@@ -81,25 +80,20 @@ public class CryptoFile {
      * @param password the password used for encryption
      * @param content  the content to encrypt and write
      */
-    public static void  writeFile(File file, String password, String content) {
-        Objects.requireNonNull(file, "file must not be null");
-        Objects.requireNonNull(password, "password must not be null");
+    public static void writeFile(File file, String password, String content) {
+        Objects.requireNonNull(file, "File must not be null");
+        Objects.requireNonNull(password, "Password must not be null");
         if (content == null) content = "";
 
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            // Build and INIT the cipher BEFORE wrapping it in CipherOutputStream.
-            Cipher cipher = initCipher(Cipher.ENCRYPT_MODE, password);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+             CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, initCipher(Cipher.ENCRYPT_MODE, password));
+             DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream)) {
 
-            try (CipherOutputStream cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
-                 DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream)) {
-                // Length-prefixed UTF format, pairs with readUTF()
-                dataOutputStream.writeUTF(content);
-                dataOutputStream.flush();
-            }
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-                 | IOException ex) {
-            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, "Encrypt failed", ex);
+            dataOutputStream.writeUTF(content);
+
+        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException ex) {
+            Logger.getLogger(CryptoFile.class.getName())
+                    .log(Level.SEVERE, "Error while encrypting file", ex);
         }
     }
-    
 }

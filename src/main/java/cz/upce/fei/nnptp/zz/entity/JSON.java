@@ -13,6 +13,8 @@ public class JSON {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
+    private static final Type PASSWORD_ENTRY_LIST = new TypeToken<List<PasswordEntry>>() {}.getType();
+
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(
                     LocalDateTime.class,
@@ -41,7 +43,6 @@ public class JSON {
         if (json == null || json.isBlank()) {
             return List.of();
         }
-        Type passwordType = new TypeToken<List<PasswordEntry>>() {}.getType();
-        return gson.fromJson(json,passwordType);
+        return gson.fromJson(json, PASSWORD_ENTRY_LIST);
     }
 }

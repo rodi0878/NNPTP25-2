@@ -34,7 +34,7 @@ public class Parameter<T> {
      * @throws IllegalArgumentException if validation fails
      */
     public Parameter(T value) {
-        assignDefaultValidators();
+        this();
         validate(value);
         this.value = value;
     }
@@ -79,8 +79,7 @@ public class Parameter<T> {
     private void validate(T value) {
         for (Predicate<T> validator : validators) {
             if (!validator.test(value)) {
-                throw new IllegalArgumentException(
-                        "Validation failed for value: " + value);
+                throw new IllegalArgumentException("Validation failed for value: " + value);
             }
         }
     }
