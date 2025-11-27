@@ -1,6 +1,7 @@
 package cz.upce.fei.nnptp.zz.entity;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -27,7 +28,7 @@ public class PasswordEntry {
      * Never {@code null}. If no parameters are provided, it is initialized as an empty map.
      * </p>
      */
-    private HashMap<String, Parameter<?>> parameters = new HashMap<>();
+    private Map<String, Parameter<?>> parameters = new HashMap<>();
 
     /**
      * Default constructor.
@@ -36,8 +37,7 @@ public class PasswordEntry {
      * The parameters map is always initialized.
      * </p>
      */
-    public PasswordEntry() {
-    }
+    public PasswordEntry() {}
 
     /**
      * Creates a password entry with the specified id and password.
@@ -46,8 +46,7 @@ public class PasswordEntry {
      * @param password password associated with this entry
      */
     public PasswordEntry(int id, String password) {
-        this.id = id;
-        this.password = password;
+        this(id, password, new HashMap<>());
     }
 
     /**
@@ -62,7 +61,9 @@ public class PasswordEntry {
      * @param password   password associated with this entry
      * @param parameters parameter map, or {@code null} to use an empty map
      */
-    public PasswordEntry(int id, String password, HashMap<String, Parameter<?>> parameters) {
+
+
+    public PasswordEntry(int id, String password, Map<String, Parameter<?>> parameters) {
         this.id = id;
         this.password = password;
         this.parameters = (parameters != null) ? parameters : new HashMap<>();
@@ -94,18 +95,18 @@ public class PasswordEntry {
      *
      * @return map of parameter names mapped to {@link Parameter} objects
      */
-    public HashMap<String, Parameter<?>> getParameters() {
+    public Map<String, Parameter<?>> getParameters() {
         return parameters;
     }
 
     /**
      * Checks whether a parameter with the given name exists.
      *
-     * @param title name of the parameter
+     * @param key name of the parameter
      * @return {@code true} if the parameter exists, otherwise {@code false}
      */
-    boolean hasParameter(String title) {
-        return parameters != null && parameters.containsKey(title);
+    boolean hasParameter(String key) {
+        return parameters.containsKey(key);
     }
 
     /**
@@ -115,7 +116,7 @@ public class PasswordEntry {
      * @return the corresponding {@link Parameter}, or {@code null} if not found
      */
     public Parameter<?> getParameter(String key) {
-        return (parameters != null) ? parameters.get(key) : null;
+        return parameters.get(key);
     }
 
     /**
@@ -125,7 +126,7 @@ public class PasswordEntry {
      */
     @Override
     public String toString() {
-        return "PasswordEntry{" + "id=" + id + ", password=" + password + ", parameters=" + parameters + '}';
+        return "PasswordEntry{id=" + id + ", password=" + password + ", parameters=" + parameters + '}';
     }
 
     /**
@@ -136,11 +137,7 @@ public class PasswordEntry {
      */
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + this.id;
-        hash = 29 * hash + Objects.hashCode(this.password);
-        hash = 29 * hash + Objects.hashCode(this.parameters);
-        return hash;
+        return Objects.hash(id, password, parameters);
     }
 
     /**
@@ -155,22 +152,10 @@ public class PasswordEntry {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final PasswordEntry other = (PasswordEntry) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (!Objects.equals(this.password, other.password)) {
-            return false;
-        }
-        return Objects.equals(this.parameters, other.parameters);
+        if (this == obj) return true;
+        if (!(obj instanceof PasswordEntry other)) return false;
+        return id == other.id &&
+                Objects.equals(password, other.password) &&
+                Objects.equals(parameters, other.parameters);
     }
 }
