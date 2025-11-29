@@ -87,6 +87,25 @@ public class PasswordDatabase {
     }
 
     /**
+     * Finds a password entry by its ID in the in-memory database.
+     *
+     * @param id ID to search for, must not be negative
+     * @return optional containing the first entry with the given ID,
+     *         or {@link Optional#empty()} if not found
+     * @throws IllegalArgumentException if {@code id} is negative
+     */
+    public Optional<PasswordEntry> findEntryById(int id) {
+        if (id < 0) {
+            throw new IllegalArgumentException("Id must not be negative.");
+        }
+
+        return passwords.stream()
+                .filter(entry -> entry.getId() == id)
+                .findFirst();
+    }
+
+
+    /**
      * Removes a password entry with the given ID from the in-memory database.
      *
      * @param id ID of the password entry to remove

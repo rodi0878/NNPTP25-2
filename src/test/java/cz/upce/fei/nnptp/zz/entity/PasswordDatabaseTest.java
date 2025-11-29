@@ -247,5 +247,31 @@ public class PasswordDatabaseTest {
         allEntries.clear();
         assertEquals(2, database.getAllEntries().size());
     }
+
+    @Test
+    void testFindEntryByIdReturnsMatchingEntry() {
+        var result = database.findEntryById(2);
+
+        assertTrue(result.isPresent());
+        assertEquals(2, result.get().getId());
+        assertEquals("password2", result.get().getPassword());
+    }
+
+    @Test
+    void testFindEntryByIdReturnsEmptyWhenNotFound() {
+        var result = database.findEntryById(999);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testFindEntryByIdWithNegativeIdThrowsException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> database.findEntryById(-1)
+        );
+
+        assertEquals("Id must not be negative.", exception.getMessage());
+    }
 }
 
