@@ -72,21 +72,21 @@ public class FilePasswordRepository implements PasswordRepository {
      * @param name the title value to search for (may be {@code null})
      * @return an {@link Optional} with the matching entry, or {@code Optional.empty()} if not found or name is {@code null}
      */
+
     @Override
     public Optional<PasswordEntry> findByName(String name) {
         if (name == null) {
             return Optional.empty();
         }
 
-        List<PasswordEntry> entries = findAll();
-        for (PasswordEntry entry : entries) {
-            Parameter param = entry.getParameter(Parameter.StandardizedParameters.TITLE);
-            if (param != null && name.equals(param.getValue().toString())) {
-                return Optional.of(entry);
-            }
-        }
-        return Optional.empty();
+        return findAll().stream()
+                .filter(entry -> {
+                    Parameter<?> p = entry.getParameter(Parameter.StandardizedParameters.TITLE);
+                    return p != null && name.equals(String.valueOf(p.getValue()));
+                })
+                .findFirst();
     }
+
 
     /**
      * Persists all provided password entries into the encrypted file, replacing any previous content.
