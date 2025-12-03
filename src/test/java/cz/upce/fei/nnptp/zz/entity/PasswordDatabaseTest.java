@@ -92,8 +92,8 @@ public class PasswordDatabaseTest {
     @Test
     void testAddNullPassword() {
         PasswordDatabase database = new PasswordDatabase(new File(""), "password");
-        NullPointerException exception = assertThrows(NullPointerException.class, () -> database.add(null));
-        assertEquals("Password is null", exception.getMessage());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> database.add(null));
+        assertEquals("Password must not be null", exception.getMessage());
     }
 
     @Test
@@ -272,6 +272,29 @@ public class PasswordDatabaseTest {
         );
 
         assertEquals("Id must not be negative.", exception.getMessage());
+    }
+
+    @Test
+    public void testSaveThrowsPasswordStorageExceptionOnEncryptionError() {
+        try (MockedStatic<CryptoFile> mockedCryptoFile = mockStatic(CryptoFile.class)) {
+            File testFile = tempDirectory.resolve("test.txt").toFile();
+            String testPassword = "password";
+
+            mockedCryptoFile.when(() -> CryptoFile.writeFile(any(File.class), eq(testPassword), anyString()))
+                    .thenThrow(new EncryptionException("Encryption failed", new IOException("Test error")));
+
+            PasswordDatabase database = new PasswordDatabase(testFile, testPassword);
+            database.add(new PasswordEntry(1, "password1"));
+
+            cz.upce.fei.nnptp.zz.repository.PasswordStorageException exception = assertThrows(
+                    cz.upce.fei.nnptp.zz.repository.PasswordStorageException.class,
+                    database::save
+            );
+
+            assertTrue(exception.getMessage().contains("Failed to encrypt password file"));
+            assertNotNull(exception.getCause());
+            assertTrue(exception.getCause() instanceof EncryptionException);
+        }
     }
 }
 

@@ -9,14 +9,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -37,9 +34,8 @@ public class CryptoFile {
     }
 
     private static Cipher initCipher(int mode, String password) throws
-            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-
-        Objects.requireNonNull(password, "Password must not be null");
+            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalArgumentException {
+        if (password == null) throw new IllegalArgumentException("Password must not be null");
 
         Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
         SecretKey secretKey = new SecretKeySpec(password.getBytes(StandardCharsets.UTF_8),
@@ -53,11 +49,13 @@ public class CryptoFile {
      *
      * @param file     the file to read from
      * @param password the password used for decryption
-     * @return the decrypted content as a String, or null if an error occurs
+     * @return the decrypted content as a String
+     * @throws DecryptionException if decryption fails due to cryptographic or I/O errors
+     * @throws IllegalArgumentException if file or password is null
      */
-    public static String readFile(File file, String password) {
-        Objects.requireNonNull(file, "file must not be null");
-        Objects.requireNonNull(password, "password must not be null");
+    public static String readFile(File file, String password) throws DecryptionException, IllegalArgumentException {
+        if (file == null) throw new IllegalArgumentException("file must not be null");
+        if (password == null) throw new IllegalArgumentException("password must not be null");
 
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             // Build and INIT the cipher BEFORE wrapping it in CipherInputStream.
@@ -68,10 +66,12 @@ public class CryptoFile {
                 // Matches write side: DataOutputStream#writeUTF
                 return dataInputStream.readUTF();
             }
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-                 | IOException ex) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, "Decrypt failed", ex);
-            return null;
+            throw new DecryptionException("Failed to initialize decryption cipher", ex);
+        } catch (IOException ex) {
+            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, "Decrypt failed", ex);
+            throw new DecryptionException("Failed to read or decrypt file: " + file.getPath(), ex);
         }
     }
     /**
@@ -80,11 +80,13 @@ public class CryptoFile {
      * @param file     the file to write to
      * @param password the password used for encryption
      * @param content  the content to encrypt and write
+     * @throws EncryptionException if encryption fails due to cryptographic or I/O errors
+     * @throws IllegalArgumentException if file or password is null
      */
-    public static void  writeFile(File file, String password, String content) {
-        Objects.requireNonNull(file, "file must not be null");
-        Objects.requireNonNull(password, "password must not be null");
-        if (content == null) content = "";
+    public static void writeFile(File file, String password, String content) throws EncryptionException, IllegalArgumentException {
+        if (file == null) throw new IllegalArgumentException("file must not be null");
+        if (password == null) throw new IllegalArgumentException("password must not be null");
+        if (content == null) throw new IllegalArgumentException("content must not be null");
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             // Build and INIT the cipher BEFORE wrapping it in CipherOutputStream.
@@ -96,9 +98,12 @@ public class CryptoFile {
                 dataOutputStream.writeUTF(content);
                 dataOutputStream.flush();
             }
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-                 | IOException ex) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException ex) {
             Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, "Encrypt failed", ex);
+            throw new EncryptionException("Failed to initialize encryption cipher", ex);
+        } catch (IOException ex) {
+            Logger.getLogger(CryptoFile.class.getName()).log(Level.SEVERE, "Encrypt failed", ex);
+            throw new EncryptionException("Failed to write or encrypt file: " + file.getPath(), ex);
         }
     }
     

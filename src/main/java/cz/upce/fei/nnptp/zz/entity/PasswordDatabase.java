@@ -2,11 +2,11 @@ package cz.upce.fei.nnptp.zz.entity;
 
 import cz.upce.fei.nnptp.zz.repository.FilePasswordRepository;
 import cz.upce.fei.nnptp.zz.repository.PasswordRepository;
+import cz.upce.fei.nnptp.zz.repository.PasswordStorageException;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,7 +28,8 @@ public class PasswordDatabase {
      * Great for unit testing and future storage backends.
      */
     public PasswordDatabase(PasswordRepository repository) {
-        this.repository = Objects.requireNonNull(repository, "repository must not be null");
+        if (repository == null) throw new IllegalArgumentException("repository must not be null");
+        this.repository = repository;
         this.file = null;
         this.password = null;
         this.passwords = new ArrayList<>();
@@ -40,8 +41,10 @@ public class PasswordDatabase {
      * @param password - string used to encrypt and decrypt database at rest
      */
     public PasswordDatabase(File file, String password) {
-        this.file = Objects.requireNonNull(file, "file must not be null");
-        this.password = Objects.requireNonNull(password, "password must not be null");
+        if (file == null) throw new IllegalArgumentException("file must not be null");
+        if (password == null) throw new IllegalArgumentException("password must not be null");
+        this.file = file;
+        this.password = password;
         this.repository = new FilePasswordRepository(this.file, this.password, new JSON());
         this.passwords = new ArrayList<>();
     }
@@ -49,38 +52,51 @@ public class PasswordDatabase {
     /**
      * Loads contents of a database from an encrypted file.
      * File and decryption password are set during Database creation.
+     *
+     * @throws PasswordStorageException if the database cannot be loaded
      */
     public void load() {
         try {
             passwords.clear();
             passwords.addAll(repository.findAll());
+        } catch (PasswordStorageException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Unable to load password database", e);
+            throw new PasswordStorageException("Unable to load password database", e);
         }
     }
 
     /**
      * Saves contents of a database to an encrypted file.
      * File and encryption password are set during Database creation.
+     *
+     * @throws PasswordStorageException if the database cannot be saved
      */
     public void save() {
         try {
             repository.saveAll(passwords);
+        } catch (PasswordStorageException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Unable to save password database", e);
+            throw new PasswordStorageException("Unable to save password database", e);
         }
     }
 
     /**
      * Adds a password to the in-memory database.
-     * @param password - Password to add
+     *
+     * @param password Password to add
+     * @throws IllegalArgumentException if password is null
+     * @throws IllegalStateException if a password with the same ID already exists
      */
     public void add(PasswordEntry password) {
-        if (Objects.isNull(password))
-            throw new NullPointerException("Password is null");
+        if (password == null) {
+            throw new IllegalArgumentException("Password must not be null");
+        }
 
-        if (passwords.stream().anyMatch(p -> p.getId() == password.getId()))
+        if (passwords.stream().anyMatch(p -> p.getId() == password.getId())) {
             throw new IllegalStateException("Password with this ID already exists");
+        }
 
         passwords.add(password);
         // Testy nevyžadují automatický persist — proto save() není volán zde.

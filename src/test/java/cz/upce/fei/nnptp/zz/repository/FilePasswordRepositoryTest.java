@@ -1,5 +1,6 @@
 package cz.upce.fei.nnptp.zz.repository;
 
+import cz.upce.fei.nnptp.zz.entity.DecryptionException;
 import cz.upce.fei.nnptp.zz.entity.JSON;
 import cz.upce.fei.nnptp.zz.entity.Parameter;
 import cz.upce.fei.nnptp.zz.entity.PasswordEntry;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -97,5 +99,50 @@ class FilePasswordRepositoryTest {
         repository.saveAll(List.of(entry));
 
         assertTrue(repository.findByName("Unknown").isEmpty());
+    }
+
+    @Test
+    void findAll_shouldCreateEmptyList_whenDecryptionFails() throws IOException {
+        File file = tempDir.resolve("corrupted.txt").toFile();
+        String masterPassword = "password";
+
+        // Create a corrupted/non-encrypted file
+        try (java.io.FileWriter writer = new java.io.FileWriter(file)) {
+            writer.write("corrupted content");
+        }
+
+        JSON json = new JSON();
+        FilePasswordRepository repository = new FilePasswordRepository(file, masterPassword, json);
+
+        List<PasswordEntry> result = repository.findAll();
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAll_shouldReturnEmptyList_whenFileIsEmpty() {
+        File file = tempDir.resolve("empty.txt").toFile();
+        String masterPassword = "password";
+
+        JSON json = new JSON();
+        FilePasswordRepository repository = new FilePasswordRepository(file, masterPassword, json);
+
+        // File doesn't exist, should return empty list (not throw exception)
+        List<PasswordEntry> result = assertDoesNotThrow(repository::findAll);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void saveAll_shouldHandleNullEntries() {
+        File file = tempDir.resolve("null_entries.txt").toFile();
+        String masterPassword = "password";
+
+        JSON json = new JSON();
+        FilePasswordRepository repository = new FilePasswordRepository(file, masterPassword, json);
+
+        // Should not throw exception when entries is null
+        assertDoesNotThrow(() -> repository.saveAll(null));
+
+        // Should create an empty file
+        assertTrue(file.exists());
     }
 }
