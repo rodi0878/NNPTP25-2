@@ -26,13 +26,17 @@ public class JSON {
             .setPrettyPrinting()
             .create();
 
-    public String toJson(List<PasswordEntry> passwords)  {
-        Objects.requireNonNull(passwords, "Password list cannot be null");
+    public String toJson(List<PasswordEntry> passwords) throws IllegalArgumentException {
+        if (passwords == null) throw new IllegalArgumentException("Password list cannot be null");
 
-        // validate entries
-        passwords.forEach(p ->
-                Objects.requireNonNull(p, "Cannot serialize null Password object")
-        );
+        try {
+            // validate entries
+            passwords.forEach(p ->
+                    Objects.requireNonNull(p, "Cannot serialize null Password object")
+            );
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("Cannot serialize null Password object");
+        }
 
         return gson.toJson(passwords);
     }

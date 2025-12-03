@@ -1,6 +1,8 @@
 package cz.upce.fei.nnptp.zz.repository;
 
 import cz.upce.fei.nnptp.zz.entity.CryptoFile;
+import cz.upce.fei.nnptp.zz.entity.DecryptionException;
+import cz.upce.fei.nnptp.zz.entity.EncryptionException;
 import cz.upce.fei.nnptp.zz.entity.JSON;
 import cz.upce.fei.nnptp.zz.entity.Parameter;
 import cz.upce.fei.nnptp.zz.entity.PasswordEntry;
@@ -9,7 +11,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -29,12 +30,15 @@ public class FilePasswordRepository implements PasswordRepository {
      * @param file     the underlying file that will be used to persist the encrypted data
      * @param password the password used to encrypt and decrypt the file contents
      * @param json     JSON helper used for serialization and deserialization of password entries
-     * @throws NullPointerException if any of the arguments is {@code null}
+     * @throws IllegalArgumentException if any of the arguments is {@code null}
      */
     public FilePasswordRepository(File file, String password, JSON json) {
-        this.file = Objects.requireNonNull(file, "file must not be null");
-        this.password = Objects.requireNonNull(password, "password must not be null");
-        this.json = Objects.requireNonNull(json, "json must not be null");
+        if (file == null) throw new IllegalArgumentException("file must not be null");
+        if (password == null) throw new IllegalArgumentException("password must not be null");
+        if (json == null) throw new IllegalArgumentException("json must not be null");
+        this.file = file;
+        this.password = password;
+        this.json = json;
     }
 
     /**
@@ -42,17 +46,17 @@ public class FilePasswordRepository implements PasswordRepository {
      * If the file is empty or cannot be read, an empty list is returned.
      *
      * @return a mutable list of all persisted password entries
-     * @throws PasswordStorageException if the stored data cannot be deserialized
+     * @throws PasswordStorageException if the file cannot be decrypted or the stored data cannot be deserialized
      */
     @Override
     public List<PasswordEntry> findAll() {
-        String data = CryptoFile.readFile(file, password);
-
-        // CryptoFile returns null on error; interpret this as "no data" and return an empty list.
-        if (data == null || data.isBlank()) {
+        String data = null;
+        try {
+            data = CryptoFile.readFile(file, password);
+        } catch (DecryptionException e) {
             return new ArrayList<>();
         }
-
+        
         try {
             // JSON.fromJson returns raw List, so we must cast it.
             @SuppressWarnings("unchecked")
@@ -92,7 +96,7 @@ public class FilePasswordRepository implements PasswordRepository {
      * Persists all provided password entries into the encrypted file, replacing any previous content.
      *
      * @param entries the entries to be stored; may be {@code null}, in which case an empty list is stored
-     * @throws PasswordStorageException if the data cannot be serialized or written to the file
+     * @throws PasswordStorageException if the data cannot be serialized, encrypted, or written to the file
      */
     @Override
     public void saveAll(List<PasswordEntry> entries) {
@@ -105,6 +109,8 @@ public class FilePasswordRepository implements PasswordRepository {
 
             // CryptoFile.writeFile is responsible for encryption and I/O; it also logs any errors internally.
             CryptoFile.writeFile(file, password, data);
+        } catch (EncryptionException e) {
+            throw new PasswordStorageException("Failed to encrypt password file", e);
         } catch (RuntimeException e) {
             throw new PasswordStorageException("Failed to save password entries", e);
         }

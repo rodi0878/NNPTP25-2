@@ -12,9 +12,11 @@ public class JSONTest {
 
     @Test
     void toJson_ThrowsException_WhenInputIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> jsonUtil.toJson(null),
-                "Expected to throw when input list is null");
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> jsonUtil.toJson(null)
+        );
+        assertTrue(exception.getMessage().contains("Password list cannot be null"));
     }
 
     @Test
@@ -23,9 +25,11 @@ public class JSONTest {
         list.add(new PasswordEntry(1, "abc"));
         list.add(null); // allowed
 
-        assertThrows(NullPointerException.class,
-                () -> jsonUtil.toJson(list),
-                "Expected to throw when list contains null entry");
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> jsonUtil.toJson(list)
+        );
+        assertTrue(exception.getMessage().contains("Cannot serialize null Password object"));
     }
 
     @Test

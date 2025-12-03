@@ -76,7 +76,7 @@ public class Parameter<T> {
      * @param value the value to validate
      * @throws IllegalArgumentException if any validator fails
      */
-    private void validate(T value) {
+    private void validate(T value) throws IllegalArgumentException {
         for (Predicate<T> validator : validators) {
             if (!validator.test(value)) {
                 throw new IllegalArgumentException(
@@ -106,6 +106,4 @@ public class Parameter<T> {
         public static final String DESCRIPTION = "description";
 
     }
-
-    // TODO: add support for validation rules
 }
