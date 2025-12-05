@@ -124,18 +124,18 @@ public class PasswordDatabase {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Title must not be null or empty.");
         }
-        for (PasswordEntry password : passwords) {
-            if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
-                Parameter<?> titleParameter = password.getParameter(Parameter.StandardizedParameters.TITLE);
-                if (titleParameter != null &&
-                        titleParameter.getValue() != null &&
-                        titleParameter.getValue().equals(title)) {
-                    return Optional.of(password);
-                }
-            }
-        }
-        return Optional.empty();
+
+        return passwords.stream()
+                .filter(p -> p.hasParameter(Parameter.StandardizedParameters.TITLE))
+                .map(p -> new Object[]{p, p.getParameter(Parameter.StandardizedParameters.TITLE)})
+                .filter(arr -> arr[1] != null && arr[1] instanceof Parameter<?> param &&
+                        param.getValue() != null && param.getValue().equals(title))
+                .map(arr -> (PasswordEntry) arr[0])
+                .findFirst();
     }
+
+
+
 
 
     /**
