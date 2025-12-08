@@ -15,8 +15,9 @@ public interface PasswordRepository {
      * Retrieves all password entries from the underlying storage.
      *
      * @return list of all stored password entries
+     * @throws PasswordStorageException if the repository cannot be accessed
      */
-    List<PasswordEntry> findAll();
+    List<PasswordEntry> findAll() throws PasswordStorageException;
 
     /**
      * Finds a password entry by its title (or name).
@@ -31,6 +32,7 @@ public interface PasswordRepository {
      * Existing data will be replaced with the provided entries.
      *
      * @param entries list of password entries to save
+     * @throws PasswordStorageException if the repository cannot be accessed
      */
-    void saveAll(List<PasswordEntry> entries);
+    void saveAll(List<PasswordEntry> entries) throws PasswordStorageException;
 }

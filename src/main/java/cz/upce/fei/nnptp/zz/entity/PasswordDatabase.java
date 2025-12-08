@@ -47,15 +47,10 @@ public class PasswordDatabase {
      *
      * @throws PasswordStorageException if the database cannot be loaded
      */
-    public void load() {
-        try {
-            passwords.clear();
-            passwords.addAll(repository.findAll());
-        } catch (PasswordStorageException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new PasswordStorageException("Unable to load password database", e);
-        }
+    public void load() throws PasswordStorageException {
+        passwords.clear();
+        List<PasswordEntry> entries = repository.findAll();
+        passwords.addAll(entries);
     }
 
     /**
@@ -64,14 +59,8 @@ public class PasswordDatabase {
      *
      * @throws PasswordStorageException if the database cannot be saved
      */
-    public void save() {
-        try {
-            repository.saveAll(passwords);
-        } catch (PasswordStorageException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new PasswordStorageException("Unable to save password database", e);
-        }
+    public void save() throws PasswordStorageException {
+        repository.saveAll(passwords);
     }
 
     /**

@@ -291,7 +291,7 @@ public class PasswordDatabaseTest {
                     database::save
             );
 
-            assertTrue(exception.getMessage().contains("Failed to encrypt password file"));
+            assertTrue(exception.getMessage().contains("Failed to save password entries"));
             assertNotNull(exception.getCause());
             assertTrue(exception.getCause() instanceof EncryptionException);
         }

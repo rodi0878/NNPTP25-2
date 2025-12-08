@@ -49,7 +49,7 @@ public class FilePasswordRepository implements PasswordRepository {
      * @throws PasswordStorageException if the file cannot be decrypted or the stored data cannot be deserialized
      */
     @Override
-    public List<PasswordEntry> findAll() {
+    public List<PasswordEntry> findAll() throws PasswordStorageException {
         String data = null;
         try {
             data = readEncryptedJson();
@@ -99,7 +99,7 @@ public class FilePasswordRepository implements PasswordRepository {
      * @throws PasswordStorageException if the data cannot be serialized, encrypted, or written to the file
      */
     @Override
-    public void saveAll(List<PasswordEntry> entries) {
+    public void saveAll(List<PasswordEntry> entries) throws PasswordStorageException {
         List<PasswordEntry> safeList =
                 entries == null ? Collections.emptyList() : new ArrayList<>(entries);
 
