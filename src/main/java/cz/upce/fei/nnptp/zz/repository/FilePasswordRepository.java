@@ -52,7 +52,7 @@ public class FilePasswordRepository implements PasswordRepository {
     public List<PasswordEntry> findAll() {
         String data = null;
         try {
-            data = CryptoFile.readFile(file, password);
+            data = readEncryptedJson();
         } catch (DecryptionException e) {
             return new ArrayList<>();
         }
@@ -60,7 +60,7 @@ public class FilePasswordRepository implements PasswordRepository {
         try {
             // JSON.fromJson returns raw List, so we must cast it.
             @SuppressWarnings("unchecked")
-            List<PasswordEntry> entries = (List<PasswordEntry>) json.fromJson(data);
+            List<PasswordEntry> entries = json.fromJson(data);
             if (entries == null) {
                 return new ArrayList<>();
             }
@@ -79,7 +79,7 @@ public class FilePasswordRepository implements PasswordRepository {
 
     @Override
     public Optional<PasswordEntry> findByName(String name) {
-        if (name == null) {
+        if (name == null || name.isBlank()) {
             return Optional.empty();
         }
 
@@ -106,13 +106,32 @@ public class FilePasswordRepository implements PasswordRepository {
         try {
             // JSON uses toJson(...) to serialize the list.
             String data = json.toJson(safeList);
-
-            // CryptoFile.writeFile is responsible for encryption and I/O; it also logs any errors internally.
-            CryptoFile.writeFile(file, password, data);
-        } catch (EncryptionException e) {
-            throw new PasswordStorageException("Failed to encrypt password file", e);
+            writeEncryptedJson(data);
         } catch (RuntimeException e) {
             throw new PasswordStorageException("Failed to save password entries", e);
         }
+    }
+
+    // Helpers for encrypted I/O
+    /**
+     * Reads encrypted JSON string from the underlying file.
+     *
+     * @return decrypted JSON string, or {@code null} if reading/decryption failed
+     * @throws DecryptionException if decryption fails
+     * @throws IllegalArgumentException if file or password is null
+     */
+    private String readEncryptedJson() throws DecryptionException, IllegalArgumentException {
+        return CryptoFile.readFile(file, password);
+    }
+
+    /**
+     * Writes the given JSON string to the underlying file using encryption.
+     *
+     * @param jsonData JSON content to encrypt and persist; never {@code null}
+     * @throws EncryptionException if encryption fails
+     * @throws IllegalArgumentException if file or password is null
+     */
+    private void writeEncryptedJson(String jsonData) throws EncryptionException, IllegalArgumentException {
+        CryptoFile.writeFile(file, password, jsonData);
     }
 }

@@ -2,6 +2,7 @@ package cz.upce.fei.nnptp.zz.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -67,7 +68,9 @@ public class Parameter<T> {
      * @param validator a predicate representing the validation rule
      */
     public void addValidator(Predicate<T> validator) {
+        Objects.requireNonNull(validator, "validator must not be null");
         validators.add(validator);
+        validateCurrentValue();
     }
 
     /**
@@ -90,7 +93,7 @@ public class Parameter<T> {
      * Currently, ensures that the value is not null.
      */
     private void assignDefaultValidators() {
-        validators.add(v -> v != null);
+        validators.add(Objects::nonNull);
     }
 
     /**
@@ -106,4 +109,14 @@ public class Parameter<T> {
         public static final String DESCRIPTION = "description";
 
     }
+
+    // TODO: add support for validation rules
+
+    /** Validates the current internal value after adding new validators. */
+    private void validateCurrentValue() {
+        if (value != null) {
+            validate(value);
+        }
+    }
+
 }

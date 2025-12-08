@@ -14,11 +14,8 @@ import java.util.Optional;
  */
 public class PasswordDatabase {
 
-    private final File file;
-    private final String password;
-
     // In-memory cache of password entries
-    private final List<PasswordEntry> passwords;
+    private final List<PasswordEntry> passwords = new ArrayList<>();
 
     // Repository handling persistence logic
     private final PasswordRepository repository;
@@ -30,23 +27,18 @@ public class PasswordDatabase {
     public PasswordDatabase(PasswordRepository repository) {
         if (repository == null) throw new IllegalArgumentException("repository must not be null");
         this.repository = repository;
-        this.file = null;
-        this.password = null;
-        this.passwords = new ArrayList<>();
     }
 
     /**
      * Creates PasswordDatabase object
-     * @param file - file to store and load database from
+     *
+     * @param file     - file to store and load database from
      * @param password - string used to encrypt and decrypt database at rest
      */
     public PasswordDatabase(File file, String password) {
         if (file == null) throw new IllegalArgumentException("file must not be null");
         if (password == null) throw new IllegalArgumentException("password must not be null");
-        this.file = file;
-        this.password = password;
-        this.repository = new FilePasswordRepository(this.file, this.password, new JSON());
-        this.passwords = new ArrayList<>();
+        this.repository = new FilePasswordRepository(file, password, new JSON());
     }
 
     /**
@@ -107,7 +99,7 @@ public class PasswordDatabase {
      *
      * @param id ID to search for, must not be negative
      * @return optional containing the first entry with the given ID,
-     *         or {@link Optional#empty()} if not found
+     * or {@link Optional#empty()} if not found
      * @throws IllegalArgumentException if {@code id} is negative
      */
     public Optional<PasswordEntry> findEntryById(int id) {
@@ -128,11 +120,15 @@ public class PasswordDatabase {
      * @return {@code true}, if at least one entry was removed, {@code false} otherwise
      */
     public boolean removeById(int id) {
+        if (id < 0) {
+            throw new IllegalArgumentException("Id must not be negative.");
+        }
         return passwords.removeIf(entry -> entry.getId() == id);
     }
 
     /**
      * Searches the in-memory database for a password based on the title parameter.
+     *
      * @param title - title to search for. Only complete match is returned.
      * @return optional containing first password whose title parameter matches input or empty optional if password not found
      */
@@ -156,6 +152,7 @@ public class PasswordDatabase {
 
     /**
      * Returns all password entries currently in memory.
+     *
      * @return list of password entries
      */
     public List<PasswordEntry> getAllEntries() {
