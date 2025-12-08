@@ -136,4 +136,31 @@ public class PasswordEntryTest {
         assertNotEquals(instance1, "string");
     }
 
+    /**
+     * Test that parameters map is never null, even with default constructor.
+     * This verifies that redundant null checks are not needed.
+     */
+    @Test
+    public void testParametersNeverNull() {
+        System.out.println("parametersNeverNull");
+        // Test default constructor
+        PasswordEntry instance1 = new PasswordEntry();
+        assertNotNull(instance1.getParameters());
+        assertTrue(instance1.getParameters().isEmpty());
+        PasswordEntry instance2 = new PasswordEntry(1, "password");
+        assertNotNull(instance2.getParameters());
+        assertTrue(instance2.getParameters().isEmpty());
+        
+        // Test constructor with null parameters (should default to empty map)
+        PasswordEntry instance3 = new PasswordEntry(2, "password", null);
+        assertNotNull(instance3.getParameters());
+        assertTrue(instance3.getParameters().isEmpty());
+        
+        // Verify methods work without null checks on all instances
+        assertFalse(instance2.hasParameter("title"));
+        assertNull(instance2.getParameter("title"));
+        assertFalse(instance3.hasParameter("title"));
+        assertNull(instance3.getParameter("title"));
+    }
+
 }

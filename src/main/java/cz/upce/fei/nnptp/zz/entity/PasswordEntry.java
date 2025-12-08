@@ -105,7 +105,7 @@ public class PasswordEntry {
      * @return {@code true} if the parameter exists, otherwise {@code false}
      */
     boolean hasParameter(String title) {
-        return parameters != null && parameters.containsKey(title);
+        return parameters.containsKey(title);
     }
 
     /**
@@ -115,7 +115,7 @@ public class PasswordEntry {
      * @return the corresponding {@link Parameter}, or {@code null} if not found
      */
     public Parameter<?> getParameter(String key) {
-        return (parameters != null) ? parameters.get(key) : null;
+        return parameters.get(key);
     }
 
     /**
