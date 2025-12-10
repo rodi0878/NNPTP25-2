@@ -119,4 +119,50 @@ public class Parameter<T> {
         }
     }
 
+    /**
+     * Compares this parameter to another object for equality.
+     * Two Parameter instances are considered equal if they are of the same type
+     * and their underlying values are equal according to {@link Objects#equals(Object, Object)}.
+     *
+     * @param o the object to compare with this parameter
+     * @return {@code true} if the specified object is equal to this parameter; {@code false} otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Parameter<?> that = (Parameter<?>) o;
+        return Objects.equals(value, that.value);
+    }
+
+    /**
+     * Returns a hash code value for this parameter.
+     * The hash code is based solely on the underlying value to be consistent
+     * with the implementation of {@link #equals(Object)}.
+     *
+     * @return the hash code value for this parameter
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    /**
+     * Returns a string representation of this parameter.
+     * The returned string contains the simple class name and the current value
+     * stored in this parameter, which is useful for logging and debugging.
+     *
+     * @return a string representation of this parameter
+     */
+    @Override
+    public String toString() {
+        return "Parameter{" +
+                "value=" + value +
+                '}';
+    }
+
 }
