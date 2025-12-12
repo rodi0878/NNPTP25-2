@@ -4,10 +4,7 @@ import cz.upce.fei.nnptp.zz.repository.FilePasswordRepository;
 import cz.upce.fei.nnptp.zz.repository.PasswordRepository;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Represents a password database that manages password entries using a repository.
@@ -20,12 +17,24 @@ public class PasswordDatabase {
     // Repository handling persistence logic
     private final PasswordRepository repository;
 
+    private void validateId(int id) {
+        if (id < 0) {
+            throw new IllegalArgumentException("ID must not be negative.");
+        }
+    }
+
+    private void validateTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title must not be null or empty.");
+        }
+    }
+
     /**
      * Primary constructor that enables injecting any repository implementation.
      * Great for unit testing and future storage backends.
      */
     public PasswordDatabase(PasswordRepository repository) {
-        this.repository = Objects.requireNonNull(repository, "repository must not be null");
+        this.repository = Objects.requireNonNull(repository, "Repository must not be null");
     }
 
     /**
@@ -36,8 +45,8 @@ public class PasswordDatabase {
      */
     public PasswordDatabase(File file, String password) {
         this(new FilePasswordRepository(
-                Objects.requireNonNull(file, "file must not be null"),
-                Objects.requireNonNull(password, "password must not be null"),
+                Objects.requireNonNull(file, "File must not be null"),
+                Objects.requireNonNull(password, "Password must not be null"),
                 new JSON()
         ));
     }
@@ -49,9 +58,12 @@ public class PasswordDatabase {
     public void load() {
         try {
             passwords.clear();
-            passwords.addAll(repository.findAll());
+            List<PasswordEntry> loaded = repository.findAll();
+            if (loaded != null) {
+                passwords.addAll(loaded);
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to load password database", e);
+            throw new IllegalArgumentException("Unable to load password database", e);
         }
     }
 
@@ -63,24 +75,26 @@ public class PasswordDatabase {
         try {
             repository.saveAll(passwords);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to save password database", e);
+            throw new IllegalArgumentException("Unable to save password database", e);
         }
     }
 
     /**
      * Adds a password to the in-memory database.
      *
-     * @param password - Password to add
+     * @param entry password entry to add
      */
-    public void add(PasswordEntry password) {
-        if (Objects.isNull(password))
-            throw new NullPointerException("Password is null");
+    public void add(PasswordEntry entry) {
+        Objects.requireNonNull(entry, "Password entry must not be null");
 
-        if (passwords.stream().anyMatch(p -> p.getId() == password.getId()))
+        boolean idExists = passwords.stream()
+                .anyMatch(p -> p.getId() == entry.getId());
+
+        if (idExists) {
             throw new IllegalStateException("Password with this ID already exists");
+        }
 
-        passwords.add(password);
-        // Testy nevyžadují automatický persist — proto save() není volán zde.
+        passwords.add(entry);
     }
 
     /**
@@ -92,15 +106,12 @@ public class PasswordDatabase {
      * @throws IllegalArgumentException if {@code id} is negative
      */
     public Optional<PasswordEntry> findEntryById(int id) {
-        if (id < 0) {
-            throw new IllegalArgumentException("Id must not be negative.");
-        }
+        validateId(id);
 
         return passwords.stream()
                 .filter(entry -> entry.getId() == id)
                 .findFirst();
     }
-
 
     /**
      * Removes a password entry with the given ID from the in-memory database.
@@ -109,9 +120,7 @@ public class PasswordDatabase {
      * @return {@code true}, if at least one entry was removed, {@code false} otherwise
      */
     public boolean removeById(int id) {
-        if (id < 0) {
-            throw new IllegalArgumentException("Id must not be negative.");
-        }
+        validateId(id);
         return passwords.removeIf(entry -> entry.getId() == id);
     }
 
@@ -122,22 +131,16 @@ public class PasswordDatabase {
      * @return optional containing first password whose title parameter matches input or empty optional if password not found
      */
     public Optional<PasswordEntry> findEntryByTitle(String title) {
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title must not be null or empty.");
-        }
-        for (PasswordEntry password : passwords) {
-            if (password.hasParameter(Parameter.StandardizedParameters.TITLE)) {
-                Parameter<?> titleParameter = password.getParameter(Parameter.StandardizedParameters.TITLE);
-                if (titleParameter != null &&
-                        titleParameter.getValue() != null &&
-                        titleParameter.getValue().equals(title)) {
-                    return Optional.of(password);
-                }
-            }
-        }
-        return Optional.empty();
-    }
+        validateTitle(title);
 
+        return passwords.stream()
+                .filter(entry -> entry.hasParameter(Parameter.StandardizedParameters.TITLE))
+                .map(entry -> Map.entry(entry,
+                        entry.getParameter(Parameter.StandardizedParameters.TITLE)))
+                .filter(e -> Objects.equals(e.getValue().getValue(), title))
+                .map(Map.Entry::getKey)
+                .findFirst();
+    }
 
     /**
      * Returns all password entries currently in memory.
