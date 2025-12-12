@@ -36,7 +36,7 @@ public class JSON {
 
         return gson.toJson(passwords);
     }
-    
+
     public List<PasswordEntry> fromJson(String json) {
         if (json == null || json.isBlank()) {
             return List.of();

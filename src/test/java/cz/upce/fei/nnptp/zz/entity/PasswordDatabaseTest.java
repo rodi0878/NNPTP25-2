@@ -93,7 +93,7 @@ public class PasswordDatabaseTest {
     void testAddNullPassword() {
         PasswordDatabase database = new PasswordDatabase(new File(""), "password");
         NullPointerException exception = assertThrows(NullPointerException.class, () -> database.add(null));
-        assertEquals("Password is null", exception.getMessage());
+        assertEquals("Password entry must not be null", exception.getMessage());
     }
 
     @Test
@@ -271,7 +271,7 @@ public class PasswordDatabaseTest {
                 () -> database.findEntryById(-1)
         );
 
-        assertEquals("Id must not be negative.", exception.getMessage());
+        assertEquals("ID must not be negative.", exception.getMessage());
     }
 }
 
