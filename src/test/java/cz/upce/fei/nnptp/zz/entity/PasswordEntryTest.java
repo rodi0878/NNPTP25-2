@@ -93,6 +93,20 @@ public class PasswordEntryTest {
         assertNull(instance.getParameter("nonexistent"));
     }
 
+    @Test
+    public void testPutParameter() {
+        PasswordEntry entry = new PasswordEntry(7, "pwd");
+        Parameter<String> titleParam = new Parameter<>("Stored");
+        entry.putParameter("title", titleParam);
+        assertSame(titleParam, entry.getParameter("title"));
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.putParameter(" ", new Parameter<>("x")));
+        assertThrows(NullPointerException.class,
+                () -> entry.putParameter(null, new Parameter<>("x")));
+        assertThrows(NullPointerException.class,
+                () -> entry.putParameter("site", null));
+    }
+
     /**
      * Test of toString method.
      */

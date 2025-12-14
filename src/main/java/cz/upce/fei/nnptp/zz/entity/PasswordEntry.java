@@ -119,6 +119,23 @@ public class PasswordEntry {
     }
 
     /**
+     * Adds or replaces a parameter under the provided key.
+     *
+     * @param key parameter name, must not be {@code null} or blank
+     * @param parameter parameter value, must not be {@code null}
+     * @throws IllegalArgumentException when {@code key} is blank
+     * @throws NullPointerException when {@code key} or {@code parameter} is {@code null}
+     */
+    public void putParameter(String key, Parameter<?> parameter) {
+        Objects.requireNonNull(key, "key must not be null");
+        Objects.requireNonNull(parameter, "parameter must not be null");
+        if (key.isBlank()) {
+            throw new IllegalArgumentException("key must not be blank");
+        }
+        parameters.put(key, parameter);
+    }
+
+    /**
      * Returns a descriptive string representation of the password entry.
      *
      * @return string including id, password, and parameters
