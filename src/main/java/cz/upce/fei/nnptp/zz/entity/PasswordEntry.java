@@ -65,7 +65,7 @@ public class PasswordEntry {
     public PasswordEntry(int id, String password, HashMap<String, Parameter<?>> parameters) {
         this.id = id;
         this.password = password;
-        this.parameters = (parameters != null) ? parameters : new HashMap<>();
+        this.parameters = (parameters != null) ? new HashMap<>(parameters) : new HashMap<>();
     }
 
     /**
@@ -95,7 +95,7 @@ public class PasswordEntry {
      * @return map of parameter names mapped to {@link Parameter} objects
      */
     public HashMap<String, Parameter<?>> getParameters() {
-        return parameters;
+        return new HashMap<>(parameters);
     }
 
     /**
