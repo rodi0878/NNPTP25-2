@@ -102,6 +102,78 @@ public class PasswordDatabaseTest {
         assertEquals("Password with this ID already exists", exception.getMessage());
     }
 
+    /**
+     * Helper method to create a PasswordEntry with the necessary TITLE parameter for searches.
+     */
+    private PasswordEntry createEntryWithTitle(long id, String passwordValue, String titleValue) {
+        HashMap<String, Parameter<?>> params = new HashMap<>();
+        Parameter<String> titleParam = new Parameter<>(titleValue);
+        // The cast to String is safe here because the Parameter constructor checks for null.
+        params.put(Parameter.StandardizedParameters.TITLE, titleParam);
+
+        // Note: The PasswordEntry constructor takes an int for id, so we cast the long.
+        return new PasswordEntry((int) id, passwordValue, params);
+    }
+
+    @Test
+    void testRemoveExistingEntryById() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+        // Create entries with proper TITLE parameters for successful searching
+        PasswordEntry entry1 = createEntryWithTitle(10, "password10", "Entry 10 Title");
+        PasswordEntry entry2 = createEntryWithTitle(20, "password20", "Entry 20 Title");
+
+        database.add(entry1);
+        database.add(entry2);
+
+        // 1. Check removal of an existing entry
+        assertTrue(database.remove(10), "Should return true when an entry is successfully removed.");
+
+        // 2. Check that the remaining entry is still present
+        var foundEntry = database.findEntryByTitle("Entry 20 Title");
+        assertTrue(foundEntry.isPresent(), "Entry 20 should still be in the database.");
+
+        // 3. Try to find the removed entry
+        assertFalse(database.findEntryByTitle("Entry 10 Title").isPresent(), "Removed entry 10 should not be found.");
+    }
+
+    @Test
+    void testRemoveNonExistingEntryById() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+        // Create entry with proper TITLE parameter
+        PasswordEntry entry1 = createEntryWithTitle(10, "password10", "Entry 10 Title");
+
+        database.add(entry1);
+
+        // Try to remove an ID that was never added
+        assertFalse(database.remove(99), "Should return false when no entry with the ID is found.");
+
+        // Check that the original entry is still present
+        assertTrue(database.findEntryByTitle("Entry 10 Title").isPresent(), "Original entry 10 must remain in the database.");
+    }
+
+    @Test
+    void testRemoveEntryFromEmptyDatabase() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+
+        // Try to remove an ID from an empty database
+        assertFalse(database.remove(50), "Should return false when removing from an empty database.");
+    }
+
+    @Test
+    void testRemoveOnlyEntry() {
+        PasswordDatabase database = new PasswordDatabase(new File(""), "password");
+        // Create the single entry
+        PasswordEntry entry1 = createEntryWithTitle(15, "singlePasswordValue", "Single Title");
+
+        database.add(entry1);
+
+        // Remove the single entry
+        assertTrue(database.remove(15), "Should return true for removing the single entry.");
+
+        // Check if the database is now empty for this entry
+        assertFalse(database.findEntryByTitle("Single Title").isPresent(), "Database should be empty after removing the only entry.");
+    }
+
     @Test
     void testFindEntryByTitle() {
         PasswordDatabase database = new PasswordDatabase(new File("testDatabase.txt"), "password");
