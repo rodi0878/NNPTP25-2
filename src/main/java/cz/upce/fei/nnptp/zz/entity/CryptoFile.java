@@ -29,9 +29,29 @@ public class CryptoFile {
 
     private static final String ENCRYPTION_ALGORITHM = "DES";
     private static final String CIPHER_TRANSFORMATION = "DES/ECB/PKCS5Padding";
+    private static final int DES_KEY_SIZE = 8;
 
     private CryptoFile() {
         throw new AssertionError("Utility class should not be instantiated");
+    }
+
+    /**
+     * Derives an 8-byte DES key from a password of any length.
+     * Uses XOR folding to handle passwords longer than 8 bytes.
+     *
+     * @param password the password to derive the key from
+     * @return 8-byte array suitable for DES encryption
+     */
+    private static byte[] deriveKey(String password) {
+        byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = new byte[DES_KEY_SIZE];
+
+        // XOR folding: combine all password bytes into 8-byte key
+        for (int i = 0; i < passwordBytes.length; i++) {
+            keyBytes[i % DES_KEY_SIZE] ^= passwordBytes[i];
+        }
+
+        return keyBytes;
     }
 
     private static Cipher initCipher(int mode, String password) throws
@@ -40,8 +60,8 @@ public class CryptoFile {
         Objects.requireNonNull(password, "Password must not be null");
 
         Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-        SecretKey secretKey = new SecretKeySpec(password.getBytes(StandardCharsets.UTF_8),
-                ENCRYPTION_ALGORITHM);
+        byte[] keyBytes = deriveKey(password);
+        SecretKey secretKey = new SecretKeySpec(keyBytes, ENCRYPTION_ALGORITHM);
         cipher.init(mode, secretKey);
         return cipher;
     }
