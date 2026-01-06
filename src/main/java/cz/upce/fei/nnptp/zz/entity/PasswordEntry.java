@@ -65,7 +65,7 @@ public class PasswordEntry {
     public PasswordEntry(int id, String password, HashMap<String, Parameter<?>> parameters) {
         this.id = id;
         this.password = password;
-        this.parameters = (parameters != null) ? parameters : new HashMap<>();
+        this.parameters = (parameters != null) ? new HashMap<>(parameters) : new HashMap<>();
     }
 
     /**
@@ -95,7 +95,7 @@ public class PasswordEntry {
      * @return map of parameter names mapped to {@link Parameter} objects
      */
     public HashMap<String, Parameter<?>> getParameters() {
-        return parameters;
+        return new HashMap<>(parameters);
     }
 
     /**
@@ -116,6 +116,23 @@ public class PasswordEntry {
      */
     public Parameter<?> getParameter(String key) {
         return (parameters != null) ? parameters.get(key) : null;
+    }
+
+    /**
+     * Adds or replaces a parameter under the provided key.
+     *
+     * @param key parameter name, must not be {@code null} or blank
+     * @param parameter parameter value, must not be {@code null}
+     * @throws IllegalArgumentException when {@code key} is blank
+     * @throws NullPointerException when {@code key} or {@code parameter} is {@code null}
+     */
+    public void putParameter(String key, Parameter<?> parameter) {
+        Objects.requireNonNull(key, "key must not be null");
+        Objects.requireNonNull(parameter, "parameter must not be null");
+        if (key.isBlank()) {
+            throw new IllegalArgumentException("key must not be blank");
+        }
+        parameters.put(key, parameter);
     }
 
     /**

@@ -64,6 +64,8 @@ public class PasswordEntryTest {
         PasswordEntry instance = new PasswordEntry(1, "pwd", params);
         HashMap<String, Parameter<?>> result = instance.getParameters();
         assertEquals(params, result);
+        result.put("another", new Parameter<>("value"));
+        assertNull(instance.getParameter("another"));
     }
 
     /**
@@ -91,6 +93,29 @@ public class PasswordEntryTest {
         PasswordEntry instance = new PasswordEntry(1, "pwd", params);
         assertEquals(titleParam, instance.getParameter("title"));
         assertNull(instance.getParameter("nonexistent"));
+    }
+
+    @Test
+    public void testConstructorCopiesProvidedMap() {
+        HashMap<String, Parameter<?>> params = new HashMap<>();
+        params.put("title", new Parameter<>("Original"));
+        PasswordEntry entry = new PasswordEntry(1, "pwd", params);
+        params.put("new", new Parameter<>("new value"));
+        assertNull(entry.getParameter("new"));
+    }
+
+    @Test
+    public void testPutParameter() {
+        PasswordEntry entry = new PasswordEntry(7, "pwd");
+        Parameter<String> titleParam = new Parameter<>("Stored");
+        entry.putParameter("title", titleParam);
+        assertSame(titleParam, entry.getParameter("title"));
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.putParameter(" ", new Parameter<>("x")));
+        assertThrows(NullPointerException.class,
+                () -> entry.putParameter(null, new Parameter<>("x")));
+        assertThrows(NullPointerException.class,
+                () -> entry.putParameter("site", null));
     }
 
     /**
