@@ -84,6 +84,28 @@ public class PasswordDatabase {
     }
 
     /**
+     * Updates an existing password entry in the in-memory database
+     *
+     * @param updated password entry with updated data
+     * @throws NullPointerException if updated is null
+     * @throws IllegalStateException if no entry with the same ID exists
+     */
+    public void update(PasswordEntry updated) {
+        if (updated == null) {
+            throw new NullPointerException("Password is null");
+        }
+
+        for (int i = 0; i < passwords.size(); i++) {
+            if (passwords.get(i).getId() == updated.getId()) {
+                passwords.set(i, updated);
+                return;
+            }
+        }
+
+        throw new IllegalStateException("Password with this ID does not exist");
+    }
+
+    /**
      * Finds a password entry by its ID in the in-memory database.
      *
      * @param id ID to search for, must not be negative

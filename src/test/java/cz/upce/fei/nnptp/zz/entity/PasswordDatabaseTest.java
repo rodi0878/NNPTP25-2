@@ -108,6 +108,41 @@ public class PasswordDatabaseTest {
         assertEquals("Password with this ID already exists", exception.getMessage());
     }
 
+    //# region update tests
+    @Test
+    void testUpdateExistingEntry() {
+        PasswordEntry updated = new PasswordEntry(1, "updatedPassword");
+
+        database.update(updated);
+
+        var result = database.findEntryById(1);
+        assertTrue(result.isPresent());
+        assertEquals("updatedPassword", result.get().getPassword());
+    }
+
+    @Test
+    void testUpdateWithNullThrowsException() {
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> database.update(null)
+        );
+
+        assertEquals("Password is null", exception.getMessage());
+    }
+
+    @Test
+    void testUpdateNonExistingIdThrowsException() {
+        PasswordEntry nonExisting = new PasswordEntry(999, "password");
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> database.update(nonExisting)
+        );
+
+        assertEquals("Password with this ID does not exist", exception.getMessage());
+    }
+    //#endregion
+
     @Test
     void testFindEntryByTitle() {
         PasswordDatabase database = new PasswordDatabase(new File("testDatabase.txt"), "password");
