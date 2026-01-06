@@ -136,6 +136,22 @@ public class PasswordEntry {
     }
 
     /**
+     * Removes a parameter identified by the provided key.
+     *
+     * @param key name of the parameter to remove, must not be {@code null} or blank
+     * @return {@code true} if a parameter was removed, otherwise {@code false}
+     * @throws NullPointerException when {@code key} is {@code null}
+     * @throws IllegalArgumentException when {@code key} is blank
+     */
+    public boolean removeParameter(String key) {
+        Objects.requireNonNull(key, "key must not be null");
+        if (key.isBlank()) {
+            throw new IllegalArgumentException("key must not be blank");
+        }
+        return parameters != null && parameters.remove(key) != null;
+    }
+
+    /**
      * Returns a descriptive string representation of the password entry.
      *
      * @return string including id, password, and parameters
