@@ -118,6 +118,17 @@ public class PasswordEntryTest {
                 () -> entry.putParameter("site", null));
     }
 
+    @Test
+    public void testRemoveParameter() {
+        HashMap<String, Parameter<?>> params = new HashMap<>();
+        params.put("title", new Parameter<>("TitleValue"));
+        PasswordEntry entry = new PasswordEntry(1, "pwd", params);
+        assertTrue(entry.removeParameter("title"));
+        assertFalse(entry.removeParameter("title"));
+        assertThrows(NullPointerException.class, () -> entry.removeParameter(null));
+        assertThrows(IllegalArgumentException.class, () -> entry.removeParameter(" "));
+    }
+
     /**
      * Test of toString method.
      */
